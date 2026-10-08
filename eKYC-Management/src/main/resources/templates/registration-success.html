@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Registration Successful</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            background: #eef6fc;
+
+            color: #222;
+        }
+
+        .container {
+            width: 780px;
+
+            max-width: 94%;
+
+            margin: 50px auto;
+
+            background: white;
+
+            padding: 55px 50px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0, 0, 0, 0.12);
+
+            text-align: center;
+        }
+
+        /* SUCCESS ICON */
+
+        .success-icon {
+
+            width: 105px;
+
+            height: 105px;
+
+            margin: 0 auto 25px;
+
+            background: #28a745;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: white;
+
+            font-size: 65px;
+
+            font-weight: bold;
+        }
+
+        h1 {
+
+            color: #28a745;
+
+            font-size: 40px;
+
+            margin: 10px 0 20px;
+        }
+
+        .description {
+
+            font-size: 20px;
+
+            line-height: 1.5;
+
+            margin-bottom: 30px;
+        }
+
+        /* CUSTOMER ID */
+
+        .customer-id-box {
+
+            background: #f0f8ff;
+
+            border: 1px solid #c8e0f5;
+
+            border-radius: 10px;
+
+            padding: 25px;
+
+            margin: 25px 0;
+        }
+
+        .customer-id-label {
+
+            font-size: 18px;
+
+            margin-bottom: 10px;
+
+            color: #444;
+        }
+
+        .customer-id {
+
+            font-size: 30px;
+
+            font-weight: bold;
+
+            color: #1f5a8a;
+
+            letter-spacing: 1px;
+        }
+
+        .reference {
+
+            font-size: 17px;
+
+            margin: 25px 0 30px;
+        }
+
+        /* BUTTONS */
+
+        .buttons {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+            margin-top: 25px;
+        }
+
+        .btn {
+
+            display: inline-block;
+
+            padding: 15px 24px;
+
+            border-radius: 7px;
+
+            text-decoration: none;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            min-width: 190px;
+
+            transition: 0.2s;
+        }
+
+        /* PROCEED eKYC */
+
+        .ekyc-btn {
+
+            background: #28a745;
+
+            color: white;
+        }
+
+        .ekyc-btn:hover {
+
+            background: #218838;
+        }
+
+        /* DASHBOARD */
+
+        .dashboard-btn {
+
+            background: #1f6fbd;
+
+            color: white;
+        }
+
+        .dashboard-btn:hover {
+
+            background: #155a9c;
+        }
+
+        /* REGISTER ANOTHER */
+
+        .register-btn {
+
+            background: #e9ecef;
+
+            color: #222;
+
+            border: 1px solid #d0d0d0;
+        }
+
+        .register-btn:hover {
+
+            background: #dfe3e6;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 700px) {
+
+            .container {
+
+                padding: 40px 25px;
+            }
+
+            h1 {
+
+                font-size: 30px;
+            }
+
+            .description {
+
+                font-size: 17px;
+            }
+
+            .customer-id {
+
+                font-size: 23px;
+            }
+
+            .buttons {
+
+                flex-direction: column;
+            }
+
+            .btn {
+
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- SUCCESS ICON -->
+
+    <div class="success-icon">
+        ✓
+    </div>
+
+
+    <!-- SUCCESS MESSAGE -->
+
+    <h1>
+
+        Registration Successfully<br>
+
+        Completed!
+
+    </h1>
+
+
+    <div class="description">
+
+        The customer has been successfully registered
+        in the eKYC Management System.
+
+    </div>
+
+
+    <!-- CUSTOMER ID -->
+
+    <div class="customer-id-box">
+
+        <div class="customer-id-label">
+
+            Customer ID
+
+        </div>
+
+
+        <div class="customer-id"
+             th:text="${customerId}">
+
+            CUS123456789
+
+        </div>
+
+    </div>
+
+
+    <div class="reference">
+
+        Please keep this Customer ID for future reference.
+
+    </div>
+
+
+    <!-- ================= BUTTONS ================= -->
+
+    <div class="buttons">
+
+
+        <!-- 1. PROCEED eKYC -->
+
+        <a th:href="@{/proceed-ekyc(customerId=${customerId})}"
+           class="btn ekyc-btn">
+
+            Proceed to eKYC
+
+        </a>
+
+
+        <!-- 2. BACK TO HOME -->
+
+        <a href="/"
+           class="btn dashboard-btn">
+
+            Back to Dashboard
+
+        </a>
+
+
+        <!-- 3. REGISTER ANOTHER CUSTOMER -->
+
+        <a href="/register"
+           class="btn register-btn">
+
+            Register Another Customer
+
+        </a>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Dashboard - eKYC Management System</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #071e3d,
+                #1261a0,
+                #1e88e5
+            );
+            color: #222;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            height: 75px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 60px;
+            background: rgba(0, 0, 0, 0.20);
+            color: white;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #64b5f6;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .logout:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ================= MAIN ================= */
+
+        .dashboard {
+            width: 90%;
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        /* ================= SUCCESS / ERROR ================= */
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* ================= WELCOME ================= */
+
+        .welcome {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* ================= CARDS ================= */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(250px, 1fr)
+            );
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.20);
+        }
+
+        .card h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            margin: 9px 0;
+            color: #444;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status-card {
+            margin-top: 25px;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.20);
+        }
+
+        .status-card h2 {
+            color: #1565c0;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .not-submitted {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .kyc-info {
+            margin-top: 20px;
+        }
+
+        .kyc-info p {
+            margin: 10px 0;
+        }
+
+        /* ================= CUSTOMER REQUEST ================= */
+
+        .request-card {
+            margin-top: 25px;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.20);
+        }
+
+        .request-card h2 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .request-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #333;
+        }
+
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        select:focus,
+        textarea:focus {
+            border-color: #1565c0;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        /* ================= SEND BUTTON ================= */
+
+        .send-button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #1565c0;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .send-button:hover {
+            background: #0d47a1;
+        }
+
+        /* ================= REQUESTS BUTTON ================= */
+
+        .requests-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 22px;
+            background: #1565c0;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .requests-link:hover {
+            background: #0d47a1;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .dashboard {
+                width: 94%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<div class="navbar">
+
+    <div class="logo">
+        <span>eKYC</span> Management System
+    </div>
+
+    <a href="/logout" class="logout">
+        Logout
+    </a>
+
+</div>
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<div class="dashboard">
+
+
+    <!-- ================= SUCCESS MESSAGE ================= -->
+
+    <div
+        th:if="${requestSuccess != null}"
+        class="success-message">
+
+        ✓
+        <span th:text="${requestSuccess}">
+            Request submitted successfully.
+        </span>
+
+    </div>
+
+
+    <!-- ================= ERROR MESSAGE ================= -->
+
+    <div
+        th:if="${requestError != null}"
+        class="error-message">
+
+        ✕
+        <span th:text="${requestError}">
+            Unable to submit request.
+        </span>
+
+    </div>
+
+    <div
+        th:if="${session.requestSuccess != null}"
+        class="success-message">
+
+        ✓
+
+        <span th:text="${session.requestSuccess}">
+            Request submitted successfully.
+        </span>
+
+    </div>
+
+
+    <!-- ================= WELCOME ================= -->
+
+    <div class="welcome">
+
+        <h1>
+
+            Welcome,
+
+            <span th:text="${customer.fullName}">
+                Customer
+            </span>
+
+        </h1>
+
+        <p>
+            Here you can view your customer and eKYC information.
+        </p>
+
+    </div>
+
+
+    <!-- ================= CUSTOMER INFORMATION ================= -->
+
+    <div class="cards">
+
+        <!-- CUSTOMER DETAILS -->
+
+        <div class="card">
+
+            <h3>
+                Customer Information
+            </h3>
+
+            <p>
+
+                <span class="label">
+                    Customer ID:
+                </span>
+
+                <span th:text="${customer.customerId}">
+                    -
+                </span>
+
+            </p>
+
+            <p>
+
+                <span class="label">
+                    Full Name:
+                </span>
+
+                <span th:text="${customer.fullName}">
+                    -
+                </span>
+
+            </p>
+
+            <p>
+
+                <span class="label">
+                    Email:
+                </span>
+
+                <span th:text="${customer.email}">
+                    -
+                </span>
+
+            </p>
+
+            <p>
+
+                <span class="label">
+                    Mobile:
+                </span>
+
+                <span th:text="${customer.mobile}">
+                    -
+                </span>
+
+            </p>
+
+        </div>
+
+
+        <!-- KYC DETAILS -->
+
+        <div class="card">
+
+            <h3>
+                KYC Information
+            </h3>
+
+            <p>
+
+                <span class="label">
+                    Aadhaar:
+                </span>
+
+                <span th:text="${customer.aadhaarNumber}">
+                    -
+                </span>
+
+            </p>
+
+            <p>
+
+                <span class="label">
+                    PAN:
+                </span>
+
+                <span th:text="${customer.panNumber}">
+                    -
+                </span>
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= EKYC STATUS ================= -->
+
+    <div class="status-card">
+
+        <h2>
+            eKYC Status
+        </h2>
+
+
+        <!-- SUBMITTED -->
+
+        <div th:if="${ekycStatus == 'SUBMITTED'}">
+
+            <span class="status">
+                ✓ eKYC Submitted Successfully
+            </span>
+
+            <div class="kyc-info">
+
+                <p>
+
+                    <span class="label">
+                        Aadhaar Verification:
+                    </span>
+
+                    ✓ Verified
+
+                </p>
+
+                <p>
+
+                    <span class="label">
+                        PAN Verification:
+                    </span>
+
+                    ✓ Verified
+
+                </p>
+
+                <p th:if="${submittedAt != null}">
+
+                    <span class="label">
+                        Submitted At:
+                    </span>
+
+                    <span th:text="${submittedAt}">
+                        -
+                    </span>
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- PENDING -->
+
+        <div th:if="${ekycStatus == 'PENDING'}">
+
+            <span class="status pending">
+                ⏳ eKYC Pending
+            </span>
+
+        </div>
+
+
+        <!-- NOT SUBMITTED -->
+
+        <div th:if="${ekycStatus == 'NOT_SUBMITTED'}">
+
+            <span class="status not-submitted">
+                ✕ eKYC Not Submitted
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- CUSTOMER REQUEST -->
+    <!-- ================================================= -->
+
+    <div class="request-card">
+
+        <h2>
+            Customer Request
+        </h2>
+
+        <p>
+            Need to update your Aadhaar, PAN or other information?
+            Submit a request to the administrator.
+        </p>
+
+
+        <!-- ================= REQUEST FORM ================= -->
+
+        <form
+            th:action="@{/customer-request}"
+            method="post">
+
+
+            <!-- IMPORTANT:
+                 Send the current customer's ID
+            -->
+
+            <input
+                type="hidden"
+                name="customerId"
+                th:value="${customer.customerId}">
+
+
+				<!-- ================= REQUEST TYPE ================= -->
+
+				<div class="form-group">
+
+				    <label for="requestType">
+
+				        Request Type
+
+				    </label>
+
+				    <select
+
+				        id="requestType"
+
+				        name="requestType"
+
+				        required>
+
+				        <option value="">
+
+				            Select Request
+
+				        </option>
+
+				        <option value="AADHAAR UPDATE">
+
+				            Aadhaar Update
+
+				        </option>
+
+				        <option value="PAN UPDATE">
+
+				            PAN Update
+
+				        </option>
+
+				        
+				        
+
+				        <option value="MOBILE NUMBER UPDATE">
+
+				            Mobile Number Update
+
+				        </option>
+
+				        <option value="ADDRESS UPDATE">
+
+				            Address Update
+
+				        </option>
+
+				        <option value="OTHER">
+
+				            Other
+
+				        </option>
+
+				    </select>
+
+				</div>
+
+
+            <!-- MESSAGE -->
+
+            <div class="form-group">
+
+                <label for="message">
+                    Message
+                </label>
+
+                <textarea
+                    id="message"
+                    name="message"
+                    rows="4"
+                    placeholder="Enter your request..."
+                    required></textarea>
+
+            </div>
+
+
+            <!-- SEND REQUEST -->
+
+            <button
+                type="submit"
+                class="send-button">
+
+                SEND REQUEST
+
+            </button>
+
+        </form>
+		
+		
+
+
+        <!-- ================= VIEW REQUESTS ================= -->
+
+        <a
+            th:href="@{/customer-requests(customerId=${customer.customerId})}"
+            class="requests-link">
+
+            Customer Requests
+
+        </a>
+		<!-- ================= UPDATED KYC PDF ================= -->
+
+		<div th:if="${request != null and request.status == 'APPROVED'}">
+
+		    <a
+		        th:href="@{'/download-kyc/' + ${customer.customerId}}"
+		        class="requests-link">
+
+		        Download Updated KYC PDF
+
+		    </a>
+
+		</div>
+
+
+        <!-- ================================================= -->
+        <!-- KYC INFORMATION UPDATE -->
+        <!-- SHOW ONLY AFTER REQUEST SUCCESS -->
+        <!-- ================================================= -->
+
+        <div
+            th:if="${session.requestSuccess != null}"
+            class="request-card">
+
+            <h2>
+                KYC Information Update
+            </h2>
+
+            <p>
+                Need to change your Name, Date of Birth,
+                Mobile Number or Address?
+            </p>
+
+			<a
+			    th:href="@{/kyc-update-form}"
+			    class="requests-link">
+
+			    UPDATE KYC INFORMATION
+
+			</a>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>KYC Information Update - eKYC Management System</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+
+            background: linear-gradient(
+                135deg,
+                #071e3d,
+                #1261a0,
+                #1e88e5
+            );
+
+            color: #222;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            height: 75px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 0 60px;
+
+            background: rgba(0, 0, 0, 0.20);
+
+            color: white;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #64b5f6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+            color: white;
+            text-decoration: none;
+
+            padding: 10px 18px;
+
+            border-radius: 6px;
+
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            width: 90%;
+            max-width: 850px;
+
+            margin: 40px auto;
+        }
+
+        /* ================= CARD ================= */
+
+        .card {
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .card h1 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* ================= MESSAGES ================= */
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+
+            border: 1px solid #a5d6a7;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            margin-bottom: 25px;
+
+            font-weight: bold;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+
+            border: 1px solid #ef9a9a;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            margin-bottom: 25px;
+
+            font-weight: bold;
+        }
+
+        /* ================= CUSTOMER INFO ================= */
+
+        .customer-info {
+            background: #f5f9ff;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            margin-bottom: 25px;
+        }
+
+        .customer-info h3 {
+            color: #1565c0;
+            margin-bottom: 12px;
+        }
+
+        .customer-info p {
+            margin: 7px 0;
+            color: #444;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+
+            color: #333;
+        }
+
+        select,
+        input[type="text"],
+        input[type="date"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 7px;
+
+            font-size: 15px;
+
+            outline: none;
+
+            background: white;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            border-color: #1565c0;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ================= CURRENT VALUE ================= */
+
+        .current-value {
+            background: #f1f3f4;
+
+            padding: 12px;
+
+            border-radius: 7px;
+
+            color: #555;
+
+            min-height: 42px;
+        }
+
+        /* ================= OTP ================= */
+
+        .otp-section {
+            display: none;
+
+            background: #f5f9ff;
+
+            border: 1px solid #bbdefb;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+        }
+
+        .otp-section h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+
+        .otp-button {
+            margin-top: 10px;
+
+            padding: 11px 18px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #1565c0;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .otp-button:hover {
+            background: #0d47a1;
+        }
+
+        .verify-button {
+            margin-top: 10px;
+
+            padding: 11px 18px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #2e7d32;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .verify-button:hover {
+            background: #1b5e20;
+        }
+
+        .otp-message {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .verified {
+            color: #2e7d32;
+        }
+
+        .not-verified {
+            color: #c62828;
+        }
+
+        /* ================= PROOF ================= */
+
+        #proofSection {
+            display: block;
+        }
+
+        /* ================= SUBMIT ================= */
+
+        .submit-button {
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #1565c0;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background: #0d47a1;
+        }
+
+        /* ================= BACK ================= */
+
+        .back-button {
+            display: inline-block;
+
+            margin-top: 20px;
+
+            padding: 11px 20px;
+
+            background: #607d8b;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 7px;
+        }
+
+        .back-button:hover {
+            background: #455a64;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .card {
+                padding: 22px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<div class="navbar">
+
+    <div class="logo">
+
+        <span>eKYC</span> Management System
+
+    </div>
+
+    <div class="nav-buttons">
+
+        <a th:href="@{/customer-dashboard}"
+           class="nav-button">
+
+            Dashboard
+
+        </a>
+
+        <a th:href="@{/logout}"
+           class="nav-button">
+
+            Logout
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ================= MAIN ================= -->
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>KYC Information Update</h1>
+
+        <p class="subtitle">
+
+            Select the information you want to update and provide
+            the required details and proof.
+
+        </p>
+
+
+        <!-- ================= SUCCESS MESSAGE ================= -->
+
+        <div th:if="${session.kycUpdateSuccess != null}"
+             class="success-message">
+
+            ✓
+
+            <span th:text="${session.kycUpdateSuccess}">
+
+                Request submitted successfully.
+
+            </span>
+
+        </div>
+
+
+        <!-- ================= ERROR MESSAGE ================= -->
+
+        <div th:if="${session.kycUpdateError != null}"
+             class="error-message">
+
+            ⚠
+
+            <span th:text="${session.kycUpdateError}">
+
+                Unable to process request.
+
+            </span>
+
+        </div>
+
+
+        <!-- ================= CUSTOMER INFORMATION ================= -->
+
+        <div class="customer-info">
+
+            <h3>Customer Information</h3>
+
+            <p>
+
+                <span class="label">
+
+                    Customer ID:
+
+                </span>
+
+                <span th:text="${customer.customerId}">
+
+                    -
+
+                </span>
+
+            </p>
+
+            <p>
+
+                <span class="label">
+
+                    Name:
+
+                </span>
+
+                <span th:text="${customer.fullName}">
+
+                    -
+
+                </span>
+
+            </p>
+
+            <p>
+
+                <span class="label">
+
+                    Mobile:
+
+                </span>
+
+                <span th:text="${customer.mobile}">
+
+                    -
+
+                </span>
+
+            </p>
+
+        </div>
+
+
+        <!-- ================= FORM ================= -->
+
+        <form th:action="@{/kyc-update-request}"
+              method="post"
+              enctype="multipart/form-data"
+              id="kycUpdateForm">
+
+
+            <!-- IMPORTANT: Update the existing request instead of creating a new request -->
+
+            <input type="hidden"
+                   name="requestId"
+                   th:value="${session.kycRequestId}">
+
+            <input type="hidden"
+                   name="customerId"
+                   th:value="${customer.customerId}">
+
+
+            <!-- ================= INFORMATION TYPE ================= -->
+
+            <div class="form-group">
+
+                <label for="updateField">
+
+                    What do you want to update?
+
+                </label>
+
+                <select id="updateField"
+                        name="fieldName"
+                        required
+                        onchange="handleUpdateField()">
+
+                    <option value="">
+
+                        Select Information
+
+                    </option>
+
+
+                    <!-- ================= AADHAAR ================= -->
+
+                    <option value="AADHAAR_NAME">
+
+                        Aadhaar Name
+
+                    </option>
+
+                    <option value="AADHAAR_DOB">
+
+                        Aadhaar Date of Birth
+
+                    </option>
+
+                    <option value="AADHAAR_MOBILE">
+
+                        Aadhaar Mobile Number
+
+                    </option>
+
+                    <option value="AADHAAR_ADDRESS">
+
+                        Aadhaar Address
+
+                    </option>
+
+
+                    <!-- ================= PAN ================= -->
+
+                    <option value="PAN_NAME">
+
+                        PAN Name
+
+                    </option>
+
+                    <option value="PAN_DOB">
+
+                        PAN Date of Birth
+
+                    </option>
+
+                    <option value="PAN_ADDRESS">
+
+                        PAN Address
+
+                    </option>
+
+
+                    <!-- ================= DRIVING LICENCE ================= -->
+
+                    <option value="DRIVING_LICENSE_NAME">
+
+                        Driving Licence Name
+
+                    </option>
+
+                    <option value="DRIVING_LICENSE_DOB">
+
+                        Driving Licence Date of Birth
+
+                    </option>
+
+                    <option value="DRIVING_LICENSE_MOBILE">
+
+                        Driving Licence Mobile Number
+
+                    </option>
+
+                    <option value="DRIVING_LICENSE_ADDRESS">
+
+                        Driving Licence Address
+
+                    </option>
+
+                    <option value="DRIVING_LICENSE_STATE">
+
+                        Driving Licence State
+
+                    </option>
+
+                    <option value="DRIVING_LICENSE_PINCODE">
+
+                        Driving Licence Pincode
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================= CURRENT VALUE ================= -->
+
+            <div class="form-group">
+
+                <label>
+
+                    Current Value
+
+                </label>
+
+                <div class="current-value">
+
+                    <span id="currentValueText">
+
+                        Select information first
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= NORMAL NEW VALUE ================= -->
+
+            <div class="form-group"
+                 id="normalNewValueSection">
+
+                <label for="newValue">
+
+                    New Value
+
+                </label>
+
+                <input type="text"
+                       id="newValue"
+                       name="newValue"
+                       placeholder="Enter new information">
+
+            </div>
+
+
+            <!-- ================= MOBILE OTP SECTION ================= -->
+
+            <div class="otp-section"
+                 id="mobileOtpSection">
+
+                <h3>
+
+                    Mobile Number Verification
+
+                </h3>
+
+                <div class="form-group">
+
+                    <label for="mobileNumber">
+
+                        New Mobile Number
+
+                    </label>
+
+                    <input type="text"
+                           id="mobileNumber"
+                           maxlength="10"
+                           inputmode="numeric"
+                           autocomplete="tel"
+                           placeholder="Enter 10-digit mobile number">
+
+                    <button type="button"
+                            class="otp-button"
+                            onclick="sendMobileOtp()">
+
+                        Send OTP
+
+                    </button>
+
+                </div>
+
+
+                <!-- ================= OTP INPUT ================= -->
+
+                <div class="form-group"
+                     id="otpInputSection"
+                     style="display:none;">
+
+                    <label for="mobileOtp">
+
+                        Enter OTP
+
+                    </label>
+
+                    <input type="text"
+                           id="mobileOtp"
+                           maxlength="6"
+                           inputmode="numeric"
+                           autocomplete="one-time-code"
+                           placeholder="Enter 6-digit OTP">
+
+                    <button type="button"
+                            class="verify-button"
+                            onclick="verifyMobileOtp()">
+
+                        Verify OTP
+
+                    </button>
+
+                    <p id="otpMessage"
+                       class="otp-message">
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= REASON ================= -->
+
+            <div class="form-group">
+
+                <label for="reason">
+
+                    Reason for Change
+
+                </label>
+
+                <select id="reason"
+                        name="reason"
+                        required>
+
+                    <option value="">
+
+                        Select Reason
+
+                    </option>
+
+                    <option value="NAME CORRECTION">
+
+                        Name Correction
+
+                    </option>
+
+                    <option value="DATE OF BIRTH CORRECTION">
+
+                        Date of Birth Correction
+
+                    </option>
+
+                    <option value="MOBILE NUMBER CHANGE">
+
+                        Mobile Number Change
+
+                    </option>
+
+                    <option value="ADDRESS CHANGE">
+
+                        Address Change
+
+                    </option>
+
+                    <option value="OTHER">
+
+                        Other
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================= ADDITIONAL DETAILS ================= -->
+
+            <div class="form-group">
+
+                <label for="additionalMessage">
+
+                    Additional Details (Optional)
+
+                </label>
+
+                <textarea id="additionalMessage"
+                          name="message"
+                          placeholder="Enter any additional information">
+
+                </textarea>
+
+            </div>
+
+
+            <!-- ================= PROOF SECTION ================= -->
+
+            <div id="proofSection">
+
+                <!-- ================= PROOF TYPE ================= -->
+
+                <div class="form-group">
+
+                    <label for="proofType">
+
+                        Proof Type
+
+                    </label>
+
+                    <select id="proofType"
+                            name="verificationType">
+
+                        <option value="">
+
+                            Select Proof
+
+                        </option>
+
+                        <option value="PAN CARD">
+
+                            PAN Card
+
+                        </option>
+
+                        <option value="PASSPORT">
+
+                            Passport
+
+                        </option>
+
+                        <option value="DRIVING LICENSE">
+
+                            Driving License
+
+                        </option>
+
+                        <option value="VOTER ID">
+
+                            Voter ID
+
+                        </option>
+
+                        <option value="OTHER">
+
+                            Other Government ID
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ================= UPLOAD PROOF ================= -->
+
+                <div class="form-group">
+
+                    <label for="proofFile">
+
+                        Upload Proof
+
+                    </label>
+
+                    <input type="file"
+                           id="proofFile"
+                           name="proofFile"
+                           accept=".pdf">
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= SUBMIT ================= -->
+
+            <button type="submit"
+                    class="submit-button"
+                    id="submitButton">
+
+                SUBMIT KYC UPDATE
+
+            </button>
+
+        </form>
+
+
+        <!-- ================= BACK ================= -->
+
+        <a th:href="@{/customer-dashboard}"
+           class="back-button">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     JAVASCRIPT
+     ========================================================== -->
+
+<script>
+
+    let mobileOtpVerified = false;
+
+
+    /* ==========================================================
+       CUSTOMER CURRENT VALUE
+       ========================================================== */
+
+    function updateCurrentValue(updateField) {
+
+        const currentValueElement =
+            document.getElementById("currentValueText");
+
+
+        const customerName =
+            document.getElementById("customerName").value;
+
+
+        const customerDob =
+            document.getElementById("customerDob").value;
+
+
+        const customerMobile =
+            document.getElementById("customerMobile").value;
+
+
+        const customerAddress =
+            document.getElementById("customerAddress").value;
+
+
+        const customerState =
+            document.getElementById("customerState").value;
+
+
+        const customerPincode =
+            document.getElementById("customerPincode").value;
+
+
+        const values = {
+
+            // ================= AADHAAR =================
+
+            AADHAAR_NAME:
+                customerName,
+
+            AADHAAR_DOB:
+                customerDob,
+
+            AADHAAR_MOBILE:
+                customerMobile,
+
+            AADHAAR_ADDRESS:
+                customerAddress,
+
+
+            // ================= PAN =================
+
+            PAN_NAME:
+                customerName,
+
+            PAN_DOB:
+                customerDob,
+
+            PAN_ADDRESS:
+                customerAddress,
+
+
+            // ================= DRIVING LICENCE =================
+
+            DRIVING_LICENSE_NAME:
+                customerName,
+
+            DRIVING_LICENSE_DOB:
+                customerDob,
+
+            DRIVING_LICENSE_MOBILE:
+                customerMobile,
+
+            DRIVING_LICENSE_ADDRESS:
+                customerAddress,
+
+            DRIVING_LICENSE_STATE:
+                customerState,
+
+            DRIVING_LICENSE_PINCODE:
+                customerPincode
+
+        };
+
+
+        if (updateField === "") {
+
+            currentValueElement.innerText =
+                "Select information first";
+
+            return;
+        }
+
+
+        currentValueElement.innerText =
+            values[updateField] || "Not available";
+
+    }
+
+
+    /* ==========================================================
+       HANDLE UPDATE FIELD
+       ========================================================== */
+
+    function handleUpdateField() {
+
+        const updateField =
+            document.getElementById("updateField").value;
+
+
+        const mobileOtpSection =
+            document.getElementById("mobileOtpSection");
+
+
+        const proofSection =
+            document.getElementById("proofSection");
+
+
+        const normalNewValueSection =
+            document.getElementById("normalNewValueSection");
+
+
+        const newValue =
+            document.getElementById("newValue");
+
+
+        const mobileNumber =
+            document.getElementById("mobileNumber");
+
+
+        const mobileOtp =
+            document.getElementById("mobileOtp");
+
+
+        const otpInputSection =
+            document.getElementById("otpInputSection");
+
+
+        const otpMessage =
+            document.getElementById("otpMessage");
+
+
+        const proofType =
+            document.getElementById("proofType");
+
+
+        const proofFile =
+            document.getElementById("proofFile");
+
+
+        /* Update current value */
+
+        updateCurrentValue(updateField);
+
+
+        /* ======================================================
+           AADHAAR MOBILE NUMBER
+           ====================================================== */
+
+        if (updateField === "AADHAAR_MOBILE") {
+
+            mobileOtpSection.style.display = "block";
+
+            normalNewValueSection.style.display = "none";
+
+            proofSection.style.display = "none";
+
+            newValue.value = "";
+
+            newValue.required = false;
+
+            proofType.required = false;
+
+            proofFile.required = false;
+
+
+            mobileOtpVerified = false;
+
+            mobileNumber.value = "";
+
+            mobileOtp.value = "";
+
+            otpInputSection.style.display = "none";
+
+            otpMessage.innerText = "";
+
+            otpMessage.className = "otp-message";
+
+        }
+
+
+        /* ======================================================
+           ALL OTHER FIELDS
+           ====================================================== */
+
+        else {
+
+            mobileOtpSection.style.display = "none";
+
+            normalNewValueSection.style.display = "block";
+
+            proofSection.style.display = "block";
+
+            newValue.required = true;
+
+            proofType.required = true;
+
+            proofFile.required = true;
+
+
+            mobileOtpVerified = false;
+
+            mobileNumber.value = "";
+
+            mobileOtp.value = "";
+
+            otpInputSection.style.display = "none";
+
+            otpMessage.innerText = "";
+
+            otpMessage.className = "otp-message";
+
+
+            /* Change input type */
+
+            if (updateField === "AADHAAR_DOB" ||
+
+                updateField === "PAN_DOB" ||
+
+                updateField === "DRIVING_LICENSE_DOB") {
+
+                newValue.type = "date";
+
+                newValue.placeholder = "";
+
+            }
+
+            else if (updateField === "AADHAAR_ADDRESS" ||
+
+                     updateField === "PAN_ADDRESS" ||
+
+                     updateField === "DRIVING_LICENSE_ADDRESS") {
+
+                newValue.type = "text";
+
+                newValue.placeholder =
+                    "Enter new address";
+
+            }
+
+            else {
+
+                newValue.type = "text";
+
+                newValue.placeholder =
+                    "Enter new information";
+
+            }
+
+        }
+
+    }
+
+
+    /* ==========================================================
+       SEND MOBILE OTP
+       ========================================================== */
+
+    function sendMobileOtp() {
+
+        const mobile =
+            document.getElementById("mobileNumber")
+                .value.trim();
+
+
+        if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+
+            alert(
+                "Please enter a valid 10-digit Indian mobile number."
+            );
+
+            return;
+        }
+
+
+        mobileOtpVerified = false;
+
+
+        fetch(
+            "/send-mobile-otp?mobile=" +
+            encodeURIComponent(mobile),
+            {
+                method: "POST"
+            }
+        )
+
+        .then(response => response.text())
+
+        .then(result => {
+
+            if (result === "OTP_SENT") {
+
+                document.getElementById(
+                    "otpInputSection"
+                ).style.display = "block";
+
+
+                document.getElementById(
+                    "otpMessage"
+                ).innerText =
+                    "OTP sent successfully. For testing, check the Eclipse console.";
+
+
+                document.getElementById(
+                    "otpMessage"
+                ).className =
+                    "otp-message";
+
+            }
+
+            else if (result === "INVALID_MOBILE") {
+
+                alert(
+                    "Invalid mobile number."
+                );
+
+            }
+
+            else {
+
+                alert(
+                    "Unable to send OTP."
+                );
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            alert(
+                "Error while sending OTP."
+            );
+
+        });
+
+    }
+
+
+    /* ==========================================================
+       VERIFY MOBILE OTP
+       ========================================================== */
+
+    function verifyMobileOtp() {
+
+        const mobile =
+            document.getElementById("mobileNumber")
+                .value.trim();
+
+
+        const otp =
+            document.getElementById("mobileOtp")
+                .value.trim();
+
+
+        if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+
+            alert(
+                "Please enter a valid mobile number."
+            );
+
+            return;
+        }
+
+
+        if (!/^[0-9]{6}$/.test(otp)) {
+
+            alert(
+                "Please enter the 6-digit OTP."
+            );
+
+            return;
+        }
+
+
+        fetch(
+            "/verify-mobile-otp?mobile=" +
+            encodeURIComponent(mobile) +
+            "&otp=" +
+            encodeURIComponent(otp),
+            {
+                method: "POST"
+            }
+        )
+
+        .then(response => response.text())
+
+        .then(result => {
+
+            const message =
+                document.getElementById("otpMessage");
+
+
+            if (result === "OTP_VERIFIED") {
+
+                mobileOtpVerified = true;
+
+
+                message.innerText =
+                    "✓ Mobile number verified successfully.";
+
+                message.className =
+                    "otp-message verified";
+
+
+                document.getElementById(
+                    "newValue"
+                ).value = mobile;
+
+
+                document.getElementById(
+                    "newValue"
+                ).required = false;
+
+
+                alert(
+                    "Mobile number verified successfully."
+                );
+
+            }
+
+            else if (result === "INVALID_OTP") {
+
+                mobileOtpVerified = false;
+
+                message.innerText =
+                    "✗ Invalid OTP. Please try again.";
+
+                message.className =
+                    "otp-message not-verified";
+
+            }
+
+            else if (result === "OTP_EXPIRED") {
+
+                mobileOtpVerified = false;
+
+                message.innerText =
+                    "✗ OTP expired. Please send a new OTP.";
+
+                message.className =
+                    "otp-message not-verified";
+
+            }
+
+            else if (result === "MOBILE_MISMATCH") {
+
+                mobileOtpVerified = false;
+
+                message.innerText =
+                    "✗ Mobile number mismatch.";
+
+                message.className =
+                    "otp-message not-verified";
+
+            }
+
+            else {
+
+                mobileOtpVerified = false;
+
+                message.innerText =
+                    "✗ OTP verification failed.";
+
+                message.className =
+                    "otp-message not-verified";
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            alert(
+                "Error while verifying OTP."
+            );
+
+        });
+
+    }
+
+
+    /* ==========================================================
+       FORM SUBMISSION
+       ========================================================== */
+
+    document.getElementById("kycUpdateForm")
+        .addEventListener("submit", function(event) {
+
+            const updateField =
+                document.getElementById("updateField").value;
+
+
+            /* ==================================================
+               MOBILE NUMBER UPDATE
+               ================================================== */
+
+            if (updateField === "AADHAAR_MOBILE") {
+
+                if (!mobileOtpVerified) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please verify the new mobile number using OTP before submitting."
+                    );
+
+                    return;
+                }
+
+
+                const mobile =
+                    document.getElementById("mobileNumber")
+                        .value.trim();
+
+
+                if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter a valid mobile number."
+                    );
+
+                    return;
+                }
+
+
+                document.getElementById(
+                    "newValue"
+                ).value = mobile;
+
+            }
+
+
+            /* ==================================================
+               OTHER KYC UPDATES
+               ================================================== */
+
+            else {
+
+                const newValue =
+                    document.getElementById("newValue")
+                        .value.trim();
+
+
+                const reason =
+                    document.getElementById("reason")
+                        .value;
+
+
+                const proofType =
+                    document.getElementById("proofType")
+                        .value;
+
+
+                const proofFile =
+                    document.getElementById("proofFile")
+                        .value;
+
+
+                if (newValue === "") {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter the new information."
+                    );
+
+                    return;
+                }
+
+
+                if (reason === "") {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please select the reason."
+                    );
+
+                    return;
+                }
+
+
+                if (proofType === "") {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please select the proof type."
+                    );
+
+                    return;
+                }
+
+
+                if (proofFile === "") {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please upload the required proof."
+                    );
+
+                    return;
+                }
+
+            }
+
+        });
+
+
+    /* ==========================================================
+       INITIAL STATE
+       ========================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            handleUpdateField();
+
+        }
+    );
+
+</script>
+
+
+<!-- ==========================================================
+     HIDDEN CUSTOMER VALUES
+     ========================================================== -->
+
+<input type="hidden"
+       id="customerName"
+       th:value="${customer.fullName}">
+
+<input type="hidden"
+       id="customerDob"
+       th:value="${customer.dateOfBirth}">
+
+<input type="hidden"
+       id="customerMobile"
+       th:value="${customer.mobile}">
+
+<input type="hidden"
+       id="customerAddress"
+       th:value="${customer.address}">
+
+<input type="hidden"
+       id="customerState"
+       th:value="${customer.state}">
+
+<input type="hidden"
+       id="customerPincode"
+       th:value="${customer.pincode}">
+
+
+</body>
+
+</html>

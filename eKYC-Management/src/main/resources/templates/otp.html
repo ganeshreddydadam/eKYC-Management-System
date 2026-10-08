@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>OTP Verification - eKYC</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #071e3d,
+                #1261a0,
+                #1e88e5
+            );
+            color: white;
+        }
+
+        .navbar {
+            height: 75px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 60px;
+            background: rgba(0,0,0,0.20);
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #64b5f6;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .otp-section {
+            min-height: calc(100vh - 75px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .otp-box {
+            width: 450px;
+            background: white;
+            color: #222;
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+        }
+
+        .otp-box h1 {
+            text-align: center;
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .email {
+            text-align: center;
+            font-weight: bold;
+            color: #1565c0;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 5px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+
+        .verify-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 7px;
+            background: #1976d2;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .verify-button:hover {
+            background: #0d47a1;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .back {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back a {
+            color: #1565c0;
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <div class="logo">
+        <span>eKYC</span> Management System
+    </div>
+
+    <div class="nav-links">
+
+        <a href="/">
+            Home
+        </a>
+
+        <a href="/register">
+            Register
+        </a>
+
+    </div>
+
+</div>
+
+
+<section class="otp-section">
+
+    <div class="otp-box">
+
+        <h1>OTP Verification</h1>
+
+        <p class="subtitle">
+            A verification OTP has been sent to
+        </p>
+
+        <div class="email"
+             th:text="${email}">
+        </div>
+
+
+        <!-- ERROR -->
+
+        <div class="error"
+             th:if="${error}"
+             th:text="${error}">
+        </div>
+
+
+        <!-- OTP FORM -->
+
+        <form action="/verify-otp"
+              method="post">
+
+            <label for="otp">
+                Enter OTP
+            </label>
+
+            <input
+                type="text"
+                id="otp"
+                name="otp"
+                placeholder="Enter 6-digit OTP"
+                maxlength="6"
+                minlength="6"
+                pattern="[0-9]{6}"
+                inputmode="numeric"
+                required
+            >
+
+            <button
+                type="submit"
+                class="verify-button">
+
+                VERIFY OTP
+
+            </button>
+
+        </form>
+
+
+        <div class="back">
+
+            <a href="/login">
+                ← Back to Login
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+</body>
+
+</html>

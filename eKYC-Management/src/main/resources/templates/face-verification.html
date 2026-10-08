@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Face Verification - eKYC</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .customer-box {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .customer-box p {
+            margin: 7px 0;
+        }
+
+        .camera-box {
+            width: 100%;
+            max-width: 650px;
+            margin: auto;
+            text-align: center;
+        }
+
+        video {
+            width: 100%;
+            max-width: 650px;
+            min-height: 350px;
+            background: #111827;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        canvas {
+            display: none;
+        }
+
+        .preview {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        #previewImage {
+            display: none;
+            width: 250px;
+            max-width: 100%;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+        }
+
+        .buttons {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 13px 24px;
+            margin: 5px;
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        #startCameraButton {
+            background: #2563eb;
+            color: white;
+        }
+
+        #captureButton {
+            background: #16a34a;
+            color: white;
+        }
+
+        #retakeButton {
+            background: #f59e0b;
+            color: white;
+        }
+
+        #verifyButton {
+            background: #7c3aed;
+            color: white;
+        }
+
+        button:disabled {
+            background: #9ca3af !important;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .requirements {
+            margin-top: 10px;
+        }
+
+        .requirements li {
+            margin: 6px 0;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 25px;
+        }
+
+        .camera-status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Face Verification</h1>
+
+    <p class="subtitle">
+        Verify your identity before your KYC details are automatically updated.
+    </p>
+
+    <!-- ========================================================= -->
+    <!-- CUSTOMER INFORMATION -->
+    <!-- ========================================================= -->
+
+    <div class="customer-box">
+
+        <p>
+            <strong>Customer ID:</strong>
+
+            <span th:text="${request.customerId}">
+                CUSTOMER_ID
+            </span>
+        </p>
+
+        <p>
+            <strong>KYC Field:</strong>
+
+            <span th:text="${request.fieldName}">
+                FIELD
+            </span>
+        </p>
+
+        <p>
+            <strong>Old Value:</strong>
+
+            <span th:text="${request.oldValue}">
+                OLD
+            </span>
+        </p>
+
+        <p>
+            <strong>New Value:</strong>
+
+            <span th:text="${request.newValue}">
+                NEW
+            </span>
+        </p>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ERROR -->
+    <!-- ========================================================= -->
+
+    <div th:if="${error}"
+         class="message error"
+         th:text="${error}">
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- INFORMATION -->
+    <!-- ========================================================= -->
+
+    <div class="message info">
+
+        <strong>Before capturing your face:</strong>
+
+        <ul class="requirements">
+
+            <li>Make sure your face is clearly visible.</li>
+
+            <li>Make sure there is enough light.</li>
+
+            <li>Remove anything covering your face.</li>
+
+            <li>Look directly at the camera.</li>
+
+            <li>Keep only one person in front of the camera.</li>
+
+            <li>Do not use a photo, screenshot or another device
+                in front of the camera.</li>
+
+        </ul>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- CAMERA -->
+    <!-- ========================================================= -->
+
+    <div class="camera-box">
+
+        <video id="camera"
+               autoplay
+               playsinline>
+        </video>
+
+        <canvas id="canvas"></canvas>
+
+        <div id="cameraStatus"
+             class="camera-status">
+            Camera not started.
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- BUTTONS -->
+    <!-- ========================================================= -->
+
+    <div class="buttons">
+
+        <button
+                type="button"
+                id="startCameraButton"
+                onclick="startCamera()">
+
+            Start Camera
+
+        </button>
+
+        <button
+                type="button"
+                id="captureButton"
+                onclick="captureFace()"
+                disabled>
+
+            Capture Face
+
+        </button>
+
+        <button
+                type="button"
+                id="retakeButton"
+                onclick="retakeFace()"
+                disabled>
+
+            Retake
+
+        </button>
+
+        <button
+                type="button"
+                id="verifyButton"
+                onclick="verifyFace()"
+                disabled>
+
+            Verify Face
+
+        </button>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- STATUS -->
+    <!-- ========================================================= -->
+
+    <div id="status"
+         class="status">
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- PREVIEW -->
+    <!-- ========================================================= -->
+
+    <div class="preview">
+
+        <h3 id="previewTitle"
+            style="display:none;">
+
+            Captured Live Face
+
+        </h3>
+
+        <img id="previewImage"
+             alt="Captured live face">
+
+    </div>
+
+</div>
+
+
+<script>
+
+    let cameraStream = null;
+
+    let capturedImage = null;
+
+    let captureTime = null;
+
+    let verificationInProgress = false;
+
+
+    const video =
+        document.getElementById("camera");
+
+    const canvas =
+        document.getElementById("canvas");
+
+    const previewImage =
+        document.getElementById("previewImage");
+
+    const startButton =
+        document.getElementById("startCameraButton");
+
+    const captureButton =
+        document.getElementById("captureButton");
+
+    const retakeButton =
+        document.getElementById("retakeButton");
+
+    const verifyButton =
+        document.getElementById("verifyButton");
+
+    const status =
+        document.getElementById("status");
+
+    const cameraStatus =
+        document.getElementById("cameraStatus");
+
+
+    // ============================================================
+    // START CAMERA
+    // ============================================================
+
+    async function startCamera() {
+
+        try {
+
+            capturedImage = null;
+
+            captureTime = null;
+
+            verificationInProgress = false;
+
+            previewImage.src = "";
+
+            previewImage.style.display = "none";
+
+            document.getElementById(
+                "previewTitle"
+            ).style.display = "none";
+
+
+            status.innerText =
+                "Requesting camera permission...";
+
+
+            cameraStatus.innerText =
+                "Starting camera...";
+
+
+            if (!navigator.mediaDevices ||
+                !navigator.mediaDevices.getUserMedia) {
+
+                throw new Error(
+                    "Camera API is not supported by this browser."
+                );
+            }
+
+
+            cameraStream =
+                await navigator.mediaDevices.getUserMedia({
+
+                    video: {
+                        facingMode: {
+                            ideal: "user"
+                        },
+
+                        width: {
+                            ideal: 1280
+                        },
+
+                        height: {
+                            ideal: 720
+                        }
+                    },
+
+                    audio: false
+                });
+
+
+            video.srcObject =
+                cameraStream;
+
+
+            await video.play();
+
+
+            startButton.disabled = true;
+
+            captureButton.disabled = false;
+
+            retakeButton.disabled = true;
+
+            verifyButton.disabled = true;
+
+
+            status.innerText =
+                "Camera started. Look directly at the camera.";
+
+            cameraStatus.innerText =
+                "Camera is active.";
+
+        } catch (error) {
+
+            console.error(
+                "Camera error:",
+                error
+            );
+
+
+            status.innerText =
+                "Camera access failed.";
+
+            cameraStatus.innerText =
+                "Camera unavailable.";
+
+
+            alert(
+                "Unable to access the camera. " +
+                "Please allow camera permission and try again."
+            );
+        }
+    }
+
+
+    // ============================================================
+    // CAPTURE FACE
+    // ============================================================
+
+    function captureFace() {
+
+        if (!cameraStream) {
+
+            alert(
+                "Please start the camera first."
+            );
+
+            return;
+        }
+
+
+        if (!video.videoWidth ||
+            !video.videoHeight) {
+
+            alert(
+                "Camera is not ready. Please wait."
+            );
+
+            return;
+        }
+
+
+        /*
+         * IMPORTANT:
+         *
+         * The image is captured directly from
+         * the live video element.
+         *
+         * It is NOT taken from the proof document.
+         */
+
+        canvas.width =
+            video.videoWidth;
+
+        canvas.height =
+            video.videoHeight;
+
+
+        const context =
+            canvas.getContext(
+                "2d",
+                {
+                    willReadFrequently: true
+                }
+            );
+
+
+        if (!context) {
+
+            alert(
+                "Unable to capture camera frame."
+            );
+
+            return;
+        }
+
+
+        context.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        context.drawImage(
+            video,
+            0,
+            0,
+            video.videoWidth,
+            video.videoHeight,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        /*
+         * Convert ONLY the current camera frame
+         * into Base64 JPEG.
+         */
+
+        const imageData =
+            canvas.toDataURL(
+                "image/jpeg",
+                0.95
+            );
+
+
+        if (!imageData ||
+            imageData.length < 1000) {
+
+            alert(
+                "Captured camera image is invalid."
+            );
+
+            return;
+        }
+
+
+        capturedImage =
+            imageData;
+
+        captureTime =
+            Date.now();
+
+
+        previewImage.src =
+            capturedImage;
+
+        previewImage.style.display =
+            "inline-block";
+
+
+        document.getElementById(
+            "previewTitle"
+        ).style.display =
+            "block";
+
+
+        captureButton.disabled =
+            true;
+
+        retakeButton.disabled =
+            false;
+
+        verifyButton.disabled =
+            false;
+
+
+        stopCamera();
+
+
+        cameraStatus.innerText =
+            "Camera stopped. Captured frame is ready.";
+
+        status.innerText =
+            "Live face captured. Review the image and click Verify Face.";
+    }
+
+
+    // ============================================================
+    // RETAKE
+    // ============================================================
+
+    function retakeFace() {
+
+        capturedImage = null;
+
+        captureTime = null;
+
+
+        previewImage.src = "";
+
+        previewImage.style.display =
+            "none";
+
+
+        document.getElementById(
+            "previewTitle"
+        ).style.display =
+            "none";
+
+
+        retakeButton.disabled =
+            true;
+
+        verifyButton.disabled =
+            true;
+
+        startButton.disabled =
+            false;
+
+        captureButton.disabled =
+            true;
+
+
+        cameraStatus.innerText =
+            "Camera not started.";
+
+        status.innerText =
+            "Click Start Camera to capture a new live face.";
+    }
+
+
+    // ============================================================
+    // STOP CAMERA
+    // ============================================================
+
+    function stopCamera() {
+
+        if (cameraStream) {
+
+            cameraStream
+                .getTracks()
+                .forEach(
+                    track => track.stop()
+                );
+
+            cameraStream = null;
+        }
+
+        video.srcObject = null;
+    }
+
+
+    // ============================================================
+    // VERIFY FACE
+    // ============================================================
+
+    async function verifyFace() {
+
+        if (verificationInProgress) {
+
+            return;
+        }
+
+
+        if (!capturedImage) {
+
+            alert(
+                "Please capture your face first."
+            );
+
+            return;
+        }
+
+
+        /*
+         * Do not allow an extremely old capture.
+         */
+        if (!captureTime ||
+            (Date.now() - captureTime) > 5 * 60 * 1000) {
+
+            alert(
+                "This captured image has expired. " +
+                "Please capture your face again."
+            );
+
+            retakeFace();
+
+            return;
+        }
+
+
+        /*
+         * Make a local copy.
+         *
+         * This ensures the exact captured frame
+         * is sent to the server.
+         */
+
+        const imageToVerify =
+            capturedImage;
+
+
+        if (!imageToVerify.startsWith(
+            "data:image/jpeg;base64,"
+        )) {
+
+            alert(
+                "Invalid captured image format."
+            );
+
+            return;
+        }
+
+
+        verificationInProgress =
+            true;
+
+
+        verifyButton.disabled =
+            true;
+
+        retakeButton.disabled =
+            true;
+
+        startButton.disabled =
+            true;
+
+        captureButton.disabled =
+            true;
+
+
+        status.innerText =
+            "Comparing proof photo with live face. Please wait...";
+
+
+        try {
+
+            const formData =
+                new URLSearchParams();
+
+
+            /*
+             * IMPORTANT:
+             *
+             * Send the camera image only.
+             *
+             * The proof document is handled
+             * separately by the Java controller.
+             */
+
+            formData.append(
+                "liveFace",
+                imageToVerify
+            );
+
+
+            const response =
+                await fetch(
+                    "/verify-face",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/x-www-form-urlencoded;charset=UTF-8"
+                        },
+
+                        body:
+                            formData.toString(),
+
+                        credentials:
+                            "same-origin"
+                    }
+                );
+
+
+            /*
+             * Successful verification normally
+             * redirects to /kyc-update-success.
+             */
+
+            if (response.redirected) {
+
+                window.location.href =
+                    response.url;
+
+                return;
+            }
+
+
+            /*
+             * Failed verification returns the
+             * face-verification page.
+             */
+
+            const html =
+                await response.text();
+
+
+            document.open();
+
+            document.write(html);
+
+            document.close();
+
+
+        } catch (error) {
+
+            console.error(
+                "Face verification error:",
+                error
+            );
+
+
+            status.innerText =
+                "Face verification request failed.";
+
+
+            alert(
+                "Unable to perform face verification. " +
+                "Please try again."
+            );
+
+
+            verificationInProgress =
+                false;
+
+
+            verifyButton.disabled =
+                false;
+
+            retakeButton.disabled =
+                false;
+        }
+    }
+
+
+    // ============================================================
+    // PAGE CLEANUP
+    // ============================================================
+
+    window.addEventListener(
+        "beforeunload",
+        function () {
+
+            stopCamera();
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

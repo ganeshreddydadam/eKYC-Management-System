@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin - Verify Request</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        .page {
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+
+        .header {
+            background: #075985;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            background: #0369a1;
+            padding: 10px 18px;
+            border-radius: 6px;
+        }
+
+        .back-btn:hover {
+            background: #0284c7;
+        }
+
+        /* MAIN CONTAINER */
+
+        .container {
+            max-width: 1050px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            color: #075985;
+            margin-bottom: 22px;
+            font-size: 25px;
+        }
+
+        /* INFORMATION ROW */
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 0;
+            min-height: 50px;
+            align-items: center;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .info-value {
+            color: #555;
+            word-break: break-word;
+        }
+
+        /* INFORMATION COMPARISON */
+
+        .comparison-title {
+            color: #075985;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        .old-value {
+            background: #fff1f2;
+            color: #b91c1c;
+            padding: 12px 15px;
+            border-radius: 6px;
+            min-height: 42px;
+            word-break: break-word;
+        }
+
+        .new-value {
+            background: #ecfdf5;
+            color: #047857;
+            padding: 12px 15px;
+            border-radius: 6px;
+            min-height: 42px;
+            word-break: break-word;
+        }
+
+        .empty-value {
+            color: #777;
+            font-style: italic;
+        }
+
+        /* PROOF */
+
+        .proof-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .proof-name {
+            font-weight: bold;
+            color: #374151;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* ADMIN DECISION */
+
+        .instruction {
+            background: #fff7d6;
+            border-left: 5px solid #eab308;
+            padding: 20px;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .remarks-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            resize: vertical;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #0284c7;
+        }
+
+        /* BUTTONS */
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .approve-btn,
+        .reject-btn {
+            border: none;
+            padding: 13px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .approve-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background: #15803d;
+        }
+
+        .reject-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .reject-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* MESSAGE */
+
+        .message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 700px) {
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .container {
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .info-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            .approve-btn,
+            .reject-btn {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>Admin - Verify Request</h1>
+
+        <a th:href="@{/admin/requests}"
+           class="back-btn">
+
+            Back to Requests
+
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+        <!-- ERROR MESSAGE -->
+
+        <div class="error"
+             th:if="${error != null}"
+             th:text="${error}">
+
+            Error message
+
+        </div>
+
+
+        <!-- SUCCESS MESSAGE -->
+
+        <div class="message"
+             th:if="${message != null}"
+             th:text="${message}">
+
+            Success message
+
+        </div>
+
+
+        <!-- REQUEST DETAILS -->
+
+        <div class="card">
+
+            <h2>Customer Request Details</h2>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Request ID
+                </div>
+
+                <div class="info-value"
+                     th:text="${request.id}">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Customer ID
+                </div>
+
+                <div class="info-value"
+                     th:text="${request.customerId}">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Email
+                </div>
+
+                <div class="info-value"
+                     th:text="${customer != null ? customer.email : 'Not available'}">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Request Type
+                </div>
+
+                <div class="info-value"
+                     th:text="${request.requestType}">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Field Name
+                </div>
+
+                <div class="info-value"
+                     th:text="${request.fieldName}">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Request Date
+                </div>
+
+                <div class="info-value"
+                     th:text="${request.requestDate}">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Status
+                </div>
+
+                <div class="info-value">
+
+                    <span class="status pending"
+                          th:if="${request.status == 'PENDING'}"
+                          th:text="${request.status}">
+                    </span>
+
+                    <span class="status approved"
+                          th:if="${request.status == 'APPROVED'}"
+                          th:text="${request.status}">
+                    </span>
+
+                    <span class="status rejected"
+                          th:if="${request.status == 'REJECTED'}"
+                          th:text="${request.status}">
+                    </span>
+
+                    <span th:if="${request.status == null}"
+                          class="empty-value">
+
+                        Not available
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- INFORMATION COMPARISON -->
+
+        <div class="card">
+
+            <h2 class="comparison-title">
+                Information Comparison
+            </h2>
+
+
+            <!-- OLD VALUE -->
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    OLD VALUE
+                </div>
+
+                <div class="old-value"
+                     th:if="${request.oldValue != null and !#strings.isEmpty(request.oldValue)}"
+                     th:text="${request.oldValue}">
+
+                    Old value
+
+                </div>
+
+                <div class="old-value empty-value"
+                     th:if="${request.oldValue == null or #strings.isEmpty(request.oldValue)}">
+
+                    No old value available
+
+                </div>
+
+            </div>
+
+
+            <!-- NEW VALUE -->
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    NEW VALUE
+                </div>
+
+                <div class="new-value"
+                     th:if="${request.newValue != null and !#strings.isEmpty(request.newValue)}"
+                     th:text="${request.newValue}">
+
+                    New value
+
+                </div>
+
+                <div class="new-value empty-value"
+                     th:if="${request.newValue == null or #strings.isEmpty(request.newValue)}">
+
+                    No new value available
+
+                </div>
+
+            </div>
+
+
+            <!-- REASON -->
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Reason
+                </div>
+
+                <div class="info-value"
+                     th:if="${request.reason != null and !#strings.isEmpty(request.reason)}"
+                     th:text="${request.reason}">
+
+                    Reason
+
+                </div>
+
+                <div class="info-value empty-value"
+                     th:if="${request.reason == null or #strings.isEmpty(request.reason)}">
+
+                    No reason provided
+
+                </div>
+
+            </div>
+
+
+            <!-- VERIFICATION TYPE -->
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Verification Type
+                </div>
+
+                <div class="info-value"
+                     th:if="${request.verificationType != null and !#strings.isEmpty(request.verificationType)}"
+                     th:text="${request.verificationType}">
+
+                    Verification type
+
+                </div>
+
+                <div class="info-value empty-value"
+                     th:if="${request.verificationType == null or #strings.isEmpty(request.verificationType)}">
+
+                    No verification type available
+
+                </div>
+
+            </div>
+
+
+            <!-- PROOF FILE -->
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Proof File
+                </div>
+
+                <div class="info-value">
+
+                    <div class="proof-box"
+                         th:if="${request.proofFile != null and !#strings.isEmpty(request.proofFile)}">
+
+                        <span class="proof-name"
+                              th:text="${request.proofFile}">
+
+                            proof.pdf
+
+                        </span>
+
+                        <a th:href="@{'/admin/proof/' + ${request.id}}"
+                           target="_blank"
+                           style="
+                               background:#075985;
+                               color:white;
+                               padding:10px 18px;
+                               border-radius:6px;
+                               text-decoration:none;
+                               font-weight:bold;
+                           ">
+
+                            📄 OPEN PDF
+
+                        </a>
+
+                    </div>
+
+                    <span class="empty-value"
+                          th:if="${request.proofFile == null or #strings.isEmpty(request.proofFile)}">
+
+                        No proof uploaded
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ADMIN DECISION -->
+
+        <div class="card"
+             th:if="${request.status != null and request.status.equalsIgnoreCase('PENDING')}">
+
+            <h2>
+                Admin Decision
+            </h2>
+
+
+            <div class="instruction">
+
+                <p>
+                    Please verify the customer's request carefully.
+                </p>
+
+                <br>
+
+                <p>
+                    If the new information is valid and the verification
+                    is successful, click <strong>APPROVE</strong>.
+                </p>
+
+                <br>
+
+                <p>
+                    If the information or proof is invalid, click
+                    <strong>REJECT</strong>.
+                </p>
+
+            </div>
+
+
+            <!-- ADMIN REMARKS -->
+
+            <label class="remarks-label"
+                   for="adminRemarks">
+
+                Admin Remarks
+
+            </label>
+
+            <textarea id="adminRemarks"
+                      name="adminRemarks"
+                      form="approveForm"
+                      placeholder="Enter remarks before approving or rejecting the request..."></textarea>
+
+
+            <!-- BUTTONS -->
+
+            <div class="button-container">
+
+                <!-- APPROVE -->
+
+                <form id="approveForm"
+                      th:action="@{/admin/approve-request}"
+                      method="post">
+
+                    <input type="hidden"
+                           name="id"
+                           th:value="${request.id}">
+
+                    <button type="submit"
+                            class="approve-btn"
+                            onclick="return confirm('Are you sure you want to approve this request?');">
+
+                        APPROVE
+
+                    </button>
+
+                </form>
+
+
+                <!-- REJECT -->
+
+                <form id="rejectForm"
+                      th:action="@{/admin/reject-request}"
+                      method="post">
+
+                    <input type="hidden"
+                           name="id"
+                           th:value="${request.id}">
+
+                    <input type="hidden"
+                           id="rejectRemarks"
+                           name="adminRemarks">
+
+                    <button type="submit"
+                            class="reject-btn"
+                            onclick="copyRemarksAndConfirm(); return false;">
+
+                        REJECT
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- ALREADY PROCESSED -->
+
+        <div class="card"
+             th:if="${request.status != null and !request.status.equalsIgnoreCase('PENDING')}">
+
+            <h2>
+                Request Already Processed
+            </h2>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Verification Status
+                </div>
+
+                <div class="info-value"
+                     th:text="${request.verificationStatus}">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Admin Remarks
+                </div>
+
+                <div class="info-value"
+                     th:text="${request.adminRemarks}">
+
+                    -
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function copyRemarksAndConfirm() {
+
+        const remarks =
+            document.getElementById("adminRemarks").value;
+
+        document.getElementById("rejectRemarks").value =
+            remarks;
+
+        const confirmed =
+            confirm("Are you sure you want to reject this request?");
+
+        if (confirmed) {
+
+            document.getElementById("rejectForm").submit();
+
+        }
+
+    }
+
+</script>
+
+</body>
+
+</html>

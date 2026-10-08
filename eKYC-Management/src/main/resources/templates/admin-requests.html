@@ -1,0 +1,269 @@
+package com.ekyc.management.controller;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.ekyc.management.entity.EkycDocumentVersion;
+import com.ekyc.management.model.Customer;
+import com.ekyc.management.model.CustomerRequest;
+import com.ekyc.management.model.Ekyc;
+import com.ekyc.management.model.KycHistory;
+import com.ekyc.management.repository.CustomerRepository;
+import com.ekyc.management.repository.CustomerRequestRepository;
+import com.ekyc.management.repository.EkycDocumentVersionRepository;
+import com.ekyc.management.repository.EkycRepository;
+import com.ekyc.management.repository.KycHistoryRepository;
+
+@Controller
+public class AdminRequestController {
+
+    // ============================================================
+    // REPOSITORIES
+    // ============================================================
+
+    @Autowired
+    private CustomerRequestRepository customerRequestRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private KycHistoryRepository kycHistoryRepository;
+
+    @Autowired
+    private EkycRepository ekycRepository;
+
+    @Autowired
+    private EkycDocumentVersionRepository
+            ekycDocumentVersionRepository;
+
+
+    // ============================================================
+    // ADMIN REQUEST LIST
+    //
+    // GET /admin/requests
+    //
+    // READ ONLY
+    // ============================================================
+
+    @GetMapping("/admin/requests")
+    public String showRequests(
+            Model model) {
+
+        /*
+         * IMPORTANT:
+         *
+         * Earlier this page only showed PENDING requests.
+         *
+         * That is not suitable anymore because the customer
+         * KYC update is automatically completed after successful
+         * face verification.
+         *
+         * Therefore, admin should see ALL requests.
+         */
+
+        List<CustomerRequest> requests =
+                customerRequestRepository.findAll();
+
+
+        model.addAttribute(
+                "requests",
+                requests
+        );
+
+
+        return "admin-requests";
+    }
+
+
+    // ============================================================
+    // VIEW REQUEST DETAILS
+    //
+    // GET /admin/request-details?id=123
+    //
+    // READ ONLY
+    // ============================================================
+
+    @GetMapping("/admin/request-details")
+    public String showRequestDetails(
+            @RequestParam("id") Long id,
+            Model model) {
+
+        // ========================================================
+        // FIND REQUEST
+        // ========================================================
+
+        CustomerRequest request =
+                customerRequestRepository
+                        .findById(id)
+                        .orElse(null);
+
+
+        if (request == null) {
+
+            model.addAttribute(
+                    "error",
+                    "KYC request not found."
+            );
+
+
+            /*
+             * Return to admin request list.
+             */
+
+            List<CustomerRequest> requests =
+                    customerRequestRepository.findAll();
+
+
+            model.addAttribute(
+                    "requests",
+                    requests
+            );
+
+
+            return "admin-requests";
+        }
+
+
+        // ========================================================
+        // FIND CUSTOMER
+        // ========================================================
+
+        Customer customer =
+                customerRepository
+                        .findByCustomerId(
+                                request.getCustomerId()
+                        )
+                        .orElse(null);
+
+
+        // ========================================================
+        // CUSTOMER KYC HISTORY
+        // ========================================================
+
+        List<KycHistory> histories =
+                kycHistoryRepository
+                        .findByCustomerIdOrderByChangedAtDesc(
+                                request.getCustomerId()
+                        );
+
+
+        // ========================================================
+        // GET SIGNED PDF VERSIONS
+        // ========================================================
+
+        List<EkycDocumentVersion> documentVersions =
+                getDocumentVersions(
+                        request.getCustomerId()
+                );
+
+
+        // ========================================================
+        // SEND DATA TO THYMELEAF
+        // ========================================================
+
+        model.addAttribute(
+                "request",
+                request
+        );
+
+
+        model.addAttribute(
+                "customer",
+                customer
+        );
+
+
+        model.addAttribute(
+                "histories",
+                histories
+        );
+
+
+        model.addAttribute(
+                "documentVersions",
+                documentVersions
+        );
+
+
+        return "admin-request-details";
+    }
+
+
+    // ============================================================
+    // GET CUSTOMER eKYC DOCUMENT VERSIONS
+    // ============================================================
+
+    private List<EkycDocumentVersion> getDocumentVersions(
+            String customerId) {
+
+        /*
+         * Your EkycRepository returns List<Ekyc>.
+         *
+         * Therefore we do NOT use:
+         *
+         *     .orElse(null)
+         *
+         * here.
+         */
+
+        List<Ekyc> ekycList =
+                ekycRepository
+                        .findByCustomerIdOrderBySubmittedAtDesc(
+                                customerId
+                        );
+
+
+        if (ekycList == null ||
+                ekycList.isEmpty()) {
+
+            return List.of();
+        }
+
+
+        // ========================================================
+        // GET LATEST EKYC RECORD
+        // ========================================================
+
+        Ekyc ekyc =
+                ekycList.get(0);
+
+
+        if (ekyc == null ||
+                ekyc.getId() == null) {
+
+            return List.of();
+        }
+
+
+        // ========================================================
+        // CURRENT REPOSITORY METHOD
+        //
+        // Gets latest PDF version.
+        // ========================================================
+
+        Optional<EkycDocumentVersion>
+                latestVersion =
+                ekycDocumentVersionRepository
+                        .findTopByEkycIdOrderByVersionNumberDesc(
+                                ekyc.getId()
+                        );
+
+
+        if (latestVersion.isEmpty()) {
+
+            return List.of();
+        }
+
+
+        return List.of(
+                latestVersion.get()
+        );
+    }
+}

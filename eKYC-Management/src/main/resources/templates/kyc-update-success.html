@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>KYC Update Successful</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f8fc;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 750px;
+            margin: 80px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 70px;
+            margin-bottom: 20px;
+            color: #16833b;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #16833b;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .details {
+            text-align: left;
+            background: #f5f8fb;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .details p {
+            margin: 12px 0;
+            font-size: 16px;
+        }
+
+        /* =====================================================
+           COMMON BUTTON STYLE
+           ===================================================== */
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            min-width: 190px;
+
+            padding: 13px 25px;
+            margin: 8px;
+
+            background: #1769aa;
+            color: white;
+
+            text-decoration: none;
+
+            border: none;
+            border-radius: 7px;
+
+            font-size: 16px;
+            font-weight: 500;
+
+            cursor: pointer;
+
+            box-sizing: border-box;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .button:hover {
+            background: #125a91;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(23, 105, 170, 0.25);
+        }
+
+        .button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        /* =====================================================
+           DOWNLOAD BUTTON
+           ===================================================== */
+
+        .download-button {
+            background: #16833b;
+        }
+
+        .download-button:hover {
+            background: #126b30;
+            box-shadow: 0 4px 10px rgba(22, 131, 59, 0.25);
+        }
+
+        .download-icon {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* =====================================================
+           BUTTON CONTAINER
+           ===================================================== */
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #b00020;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* =====================================================
+           MOBILE RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 650px) {
+
+            .container {
+                width: 85%;
+                margin: 40px auto;
+                padding: 25px;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+                max-width: 300px;
+                margin: 6px 0;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .message {
+                font-size: 16px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="success-icon">
+        ✓
+    </div>
+
+    <h1>
+        KYC Update Successful
+    </h1>
+
+    <div class="message"
+         th:text="${successMessage}">
+
+        Face verification successful.
+        Your KYC information has been updated successfully.
+
+    </div>
+
+    <div class="error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+    <div class="details"
+         th:if="${request != null}">
+
+        <p>
+
+            <strong>Field Updated:</strong>
+
+            <span th:text="${request.fieldName}">
+                -
+            </span>
+
+        </p>
+
+        <p>
+
+            <strong>Previous Value:</strong>
+
+            <span th:text="${request.oldValue}">
+                -
+            </span>
+
+        </p>
+
+        <p>
+
+            <strong>New Value:</strong>
+
+            <span th:text="${request.newValue}">
+                -
+            </span>
+
+        </p>
+
+        <p>
+
+            <strong>Verification:</strong>
+
+            <span th:text="${request.verificationStatus}">
+                VERIFIED
+            </span>
+
+        </p>
+
+        <p>
+
+            <strong>Face Match Score:</strong>
+
+            <span th:if="${matchScore != null}"
+                  th:text="${matchScore}">
+                -
+            </span>
+
+            <span th:if="${matchScore == null}">
+                Not available
+            </span>
+
+        </p>
+
+        <p>
+
+            <strong>Status:</strong>
+
+            <span th:text="${request.status}">
+                COMPLETED
+            </span>
+
+        </p>
+
+    </div>
+
+    <!-- =====================================================
+         BUTTONS
+         ===================================================== -->
+
+    <div class="button-container">
+
+        <a href="/customer-dashboard"
+           class="button">
+
+            Back to Dashboard
+
+        </a>
+
+        <a href="/customer-requests"
+           class="button">
+
+            View KYC History
+
+        </a>
+
+        <a href="/customer/kyc/download-signed"
+           class="button download-button">
+
+            <span class="download-icon">↓</span>
+
+            Download Signed KYC PDF
+
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

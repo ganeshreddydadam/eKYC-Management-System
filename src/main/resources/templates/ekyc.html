@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>eKYC Verification</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 60px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #007bff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info {
+            background: #eef5ff;
+            color: #24527a;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>eKYC Verification</h1>
+
+    <div class="subtitle">
+        Verify your registered Aadhaar and PAN details
+    </div>
+
+
+    <!-- ERROR MESSAGE -->
+
+    <div class="error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+
+    <!-- CUSTOMER ID INFORMATION -->
+
+    <div class="info"
+         th:if="${customerId != null}">
+
+        Customer ID:
+        <strong th:text="${customerId}"></strong>
+
+    </div>
+
+
+    <!-- eKYC FORM -->
+
+    <form th:action="@{/ekyc}"
+          method="post">
+
+
+        <!-- IMPORTANT:
+             Send the customer ID to EkycController -->
+
+        <input type="hidden"
+               name="customerId"
+               th:value="${customerId}">
+
+
+        <!-- AADHAAR -->
+
+        <div class="form-group">
+
+            <label for="aadhaarNumber">
+                Aadhaar Number
+            </label>
+
+            <input type="text"
+                   id="aadhaarNumber"
+                   name="aadhaarNumber"
+                   placeholder="Enter 12-digit Aadhaar number"
+                   maxlength="12"
+                   minlength="12"
+                   pattern="[0-9]{12}"
+                   inputmode="numeric"
+                   required>
+
+        </div>
+
+
+        <!-- PAN -->
+
+        <div class="form-group">
+
+            <label for="panNumber">
+                PAN Number
+            </label>
+
+            <input type="text"
+                   id="panNumber"
+                   name="panNumber"
+                   placeholder="Enter PAN number"
+                   maxlength="10"
+                   minlength="10"
+                   pattern="[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}"
+                   style="text-transform: uppercase;"
+                   required>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <button type="submit"
+                class="btn">
+
+            Proceed eKYC
+
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>KYC Information Update - eKYC Management System</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #071e3d,
+                #1261a0,
+                #1e88e5
+            );
+            color: #222;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            min-height: 75px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 60px;
+            background: rgba(0, 0, 0, 0.20);
+            color: white;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #64b5f6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .page-card {
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        h1 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .customer-info {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* ================= MESSAGES ================= */
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .required {
+            color: red;
+        }
+
+        select,
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        select:focus,
+        input[type="text"]:focus,
+        input[type="file"]:focus,
+        textarea:focus {
+            border-color: #1565c0;
+            box-shadow:
+                0 0 0 2px rgba(21, 101, 192, 0.10);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* ================= CURRENT VALUE ================= */
+
+        .current-value-box {
+            background: #f5f7fa;
+            border: 1px solid #ddd;
+            padding: 13px;
+            border-radius: 7px;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        /* ================= PROOF SECTION ================= */
+
+        .proof-section {
+            display: none;
+            background: #f8fbff;
+            border: 1px solid #c5d9f2;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .proof-section h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+
+        .otp-info {
+            display: none;
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            color: #795548;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        /* ================= BUTTON ================= */
+
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #1565c0;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background: #0d47a1;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 11px 20px;
+            background: #555;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .back-button:hover {
+            background: #333;
+        }
+
+        /* ================= NOTE ================= */
+
+        .note {
+            background: #e3f2fd;
+            border-left: 5px solid #1565c0;
+            padding: 14px;
+            margin-bottom: 25px;
+            color: #444;
+            line-height: 1.5;
+            border-radius: 5px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .container {
+                width: 95%;
+            }
+
+            .page-card {
+                padding: 20px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <div class="navbar">
+
+        <div class="logo">
+            <span>eKYC</span> Management System
+        </div>
+
+        <div class="nav-buttons">
+
+            <a href="/customer-dashboard"
+               class="nav-button">
+                Dashboard
+            </a>
+
+            <a href="/logout"
+               class="nav-button">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="container">
+
+        <div class="page-card">
+
+            <h1>
+                KYC Information Update Request
+            </h1>
+
+            <p class="customer-info">
+
+                Customer:
+
+                <strong th:text="${customer.fullName}">
+                    Customer
+                </strong>
+
+                &nbsp; | &nbsp;
+
+                Customer ID:
+
+                <strong th:text="${customer.customerId}">
+                    -
+                </strong>
+
+            </p>
+
+
+            <!-- ================= NOTE ================= -->
+
+            <div class="note">
+
+                <strong>Important:</strong>
+
+                Select the information you want to update.
+                Enter the new value and reason for the change.
+
+                For Aadhaar Mobile Number, verification is done
+                through OTP.
+
+                For other information, upload the required
+                PDF proof document.
+
+            </div>
+
+
+            <!-- ================= SUCCESS ================= -->
+
+            <div class="success"
+                 th:if="${session.kycUpdateSuccess != null}">
+
+                ✓
+
+                <span th:text="${session.kycUpdateSuccess}">
+                    KYC update request submitted successfully.
+                </span>
+
+            </div>
+
+
+            <!-- ================= ERROR ================= -->
+
+            <div class="error"
+                 th:if="${session.kycUpdateError != null}">
+
+                ✕
+
+                <span th:text="${session.kycUpdateError}">
+                    Unable to submit request.
+                </span>
+
+            </div>
+
+
+            <!-- ================= FORM ================= -->
+
+            <form action="/submit-kyc-update"
+                  method="post"
+                  enctype="multipart/form-data">
+
+
+                <!-- ================= CUSTOMER ID ================= -->
+
+                <input type="hidden"
+                       name="customerId"
+                       th:value="${customer.customerId}">
+
+
+                <!-- ================= UPDATE FIELD ================= -->
+
+                <div class="form-group">
+
+                    <label for="updateField">
+
+                        Information to Update
+
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <select id="updateField"
+                            name="updateField"
+                            required
+                            onchange="handleFieldChange()">
+
+                        <option value="">
+                            -- Select Information --
+                        </option>
+
+                        <option value="AADHAAR_NAME">
+                            Aadhaar Name
+                        </option>
+
+                        <option value="AADHAAR_DOB">
+                            Aadhaar Date of Birth
+                        </option>
+
+                        <option value="AADHAAR_MOBILE">
+                            Aadhaar Mobile Number
+                        </option>
+
+                        <option value="AADHAAR_ADDRESS">
+                            Aadhaar Address
+                        </option>
+
+                        <option value="PAN_NAME">
+                            PAN Name
+                        </option>
+
+                        <option value="PAN_DOB">
+                            PAN Date of Birth
+                        </option>
+
+                        <option value="PAN_ADDRESS">
+                            PAN Address
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ================= CURRENT VALUE ================= -->
+
+                <div class="form-group">
+
+                    <label>
+                        Current Registered Value
+                    </label>
+
+                    <div id="currentValue"
+                         class="current-value-box">
+
+                        Please select an information field.
+
+                    </div>
+
+                    <!-- Hidden old value sent to controller -->
+
+                    <input type="hidden"
+                           id="oldValue"
+                           name="oldValue">
+
+                    <!-- Hidden field name sent to controller -->
+
+                    <input type="hidden"
+                           id="fieldName"
+                           name="fieldName">
+
+                </div>
+
+
+                <!-- ================= NEW VALUE ================= -->
+
+                <div class="form-group">
+
+                    <label for="newValue">
+
+                        New Value
+
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <input type="text"
+                           id="newValue"
+                           name="newValue"
+                           placeholder="Enter new value"
+                           required>
+
+                </div>
+
+
+                <!-- ================= REASON ================= -->
+
+                <div class="form-group">
+
+                    <label for="reason">
+
+                        Reason for Update
+
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <textarea id="reason"
+                              name="reason"
+                              placeholder="Enter the reason for this update"
+                              required></textarea>
+
+                </div>
+
+
+                <!-- ================= ADDITIONAL MESSAGE ================= -->
+
+                <div class="form-group">
+
+                    <label for="additionalMessage">
+
+                        Additional Message
+
+                    </label>
+
+                    <textarea id="additionalMessage"
+                              name="message"
+                              placeholder="Enter any additional information (optional)"></textarea>
+
+                </div>
+
+
+                <!-- ================= VERIFICATION TYPE ================= -->
+
+                <input type="hidden"
+                       id="verificationType"
+                       name="verificationType"
+                       value="PROOF">
+
+
+                <!-- ================= PROOF SECTION ================= -->
+
+                <div id="proofSection"
+                     class="proof-section">
+
+                    <h3>
+                        Proof Document
+                    </h3>
+
+
+                    <!-- ================= PROOF TYPE ================= -->
+
+                    <div class="form-group">
+
+                        <label for="proofType">
+
+                            Proof Type
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <select id="proofType"
+                                name="proofType">
+
+                            <option value="">
+                                -- Select Proof Type --
+                            </option>
+
+                            <option value="AADHAAR">
+                                Aadhaar Card
+                            </option>
+
+                            <option value="PAN">
+                                PAN Card
+                            </option>
+
+                            <option value="PASSPORT">
+                                Passport
+                            </option>
+
+                            <option value="DRIVING_LICENSE">
+                                Driving License
+                            </option>
+
+                            <option value="VOTER_ID">
+                                Voter ID
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- ================= PROOF FILE ================= -->
+
+                    <div class="form-group">
+
+                        <label for="proofFile">
+
+                            Upload Proof Document
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input type="file"
+                               id="proofFile"
+                               name="proofFile"
+                               accept=".pdf">
+
+                        <small>
+                            Only PDF files are accepted.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================= OTP INFO ================= -->
+
+                <div id="otpInfo"
+                     class="otp-info">
+
+                    <strong>
+                        OTP Verification Required
+                    </strong>
+
+                    <br>
+                    <br>
+
+                    Aadhaar Mobile Number updates do not require
+                    a proof document.
+
+                    The mobile number will be verified using OTP
+                    before the request is approved.
+
+                </div>
+
+
+                <!-- ================= SUBMIT ================= -->
+
+                <button type="submit"
+                        class="submit-button">
+
+                    Submit KYC Update Request
+
+                </button>
+
+
+            </form>
+
+
+            <!-- ================= BACK ================= -->
+
+            <a href="/customer-dashboard"
+               class="back-button">
+
+                ← Back to Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        function handleFieldChange() {
+
+            const field =
+                document.getElementById("updateField").value;
+
+            const currentValue =
+                document.getElementById("currentValue");
+
+            const oldValue =
+                document.getElementById("oldValue");
+
+            const fieldName =
+                document.getElementById("fieldName");
+
+            const newValue =
+                document.getElementById("newValue");
+
+            const proofSection =
+                document.getElementById("proofSection");
+
+            const proofType =
+                document.getElementById("proofType");
+
+            const proofFile =
+                document.getElementById("proofFile");
+
+            const otpInfo =
+                document.getElementById("otpInfo");
+
+            /* =========================================
+               RESET
+            ========================================= */
+
+            currentValue.innerText =
+                "Please select an information field.";
+
+            oldValue.value = "";
+            fieldName.value = field;
+
+            newValue.value = "";
+
+            proofSection.style.display = "none";
+
+            otpInfo.style.display = "none";
+
+            proofType.required = false;
+
+            proofFile.required = false;
+
+            /* =========================================
+               NO FIELD SELECTED
+            ========================================= */
+
+            if (field === "") {
+                fieldName.value = "";
+                return;
+            }
+
+            /* =========================================
+               CURRENT CUSTOMER VALUES
+            ========================================= */
+
+            const customerName =
+                /*[[${customer.fullName}]]*/ "";
+
+            const customerDob =
+                /*[[${customer.dateOfBirth}]]*/ "";
+
+            const customerMobile =
+                /*[[${customer.mobile}]]*/ "";
+
+            const customerAddress =
+                /*[[${customer.address}]]*/ "";
+
+            /* =========================================
+               SHOW CURRENT VALUE
+            ========================================= */
+
+            if (field === "AADHAAR_NAME") {
+
+                currentValue.innerText =
+                    customerName || "-";
+
+                oldValue.value =
+                    customerName || "";
+
+            }
+
+            else if (field === "PAN_NAME") {
+
+                currentValue.innerText =
+                    customerName || "-";
+
+                oldValue.value =
+                    customerName || "";
+
+            }
+
+            else if (field === "AADHAAR_DOB") {
+
+                currentValue.innerText =
+                    customerDob || "-";
+
+                oldValue.value =
+                    customerDob || "";
+
+            }
+
+            else if (field === "PAN_DOB") {
+
+                currentValue.innerText =
+                    customerDob || "-";
+
+                oldValue.value =
+                    customerDob || "";
+
+            }
+
+            else if (field === "AADHAAR_MOBILE") {
+
+                currentValue.innerText =
+                    customerMobile || "-";
+
+                oldValue.value =
+                    customerMobile || "";
+
+            }
+
+            else if (field === "AADHAAR_ADDRESS") {
+
+                currentValue.innerText =
+                    customerAddress || "-";
+
+                oldValue.value =
+                    customerAddress || "";
+
+            }
+
+            else if (field === "PAN_ADDRESS") {
+
+                currentValue.innerText =
+                    customerAddress || "-";
+
+                oldValue.value =
+                    customerAddress || "";
+
+            }
+
+            /* =========================================
+               MOBILE = OTP
+            ========================================= */
+
+            if (field === "AADHAAR_MOBILE") {
+
+                proofSection.style.display =
+                    "none";
+
+                otpInfo.style.display =
+                    "block";
+
+                proofType.required =
+                    false;
+
+                proofFile.required =
+                    false;
+
+                document.getElementById(
+                    "verificationType"
+                ).value = "OTP";
+
+                newValue.placeholder =
+                    "Enter new 10-digit mobile number";
+
+                newValue.pattern =
+                    "[6-9][0-9]{9}";
+
+                newValue.maxLength =
+                    10;
+
+            }
+
+            /* =========================================
+               OTHER FIELDS = PDF PROOF
+            ========================================= */
+
+            else {
+
+                proofSection.style.display =
+                    "block";
+
+                otpInfo.style.display =
+                    "none";
+
+                proofType.required =
+                    true;
+
+                proofFile.required =
+                    true;
+
+                document.getElementById(
+                    "verificationType"
+                ).value = "PROOF";
+
+                newValue.placeholder =
+                    "Enter new value";
+
+                newValue.removeAttribute(
+                    "pattern"
+                );
+
+                newValue.removeAttribute(
+                    "maxlength"
+                );
+            }
+        }
+
+
+        /* =========================================
+           INITIAL LOAD
+        ========================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+                handleFieldChange();
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

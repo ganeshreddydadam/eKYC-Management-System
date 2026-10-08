@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Requests - eKYC Management System</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #071e3d,
+                #1261a0,
+                #1e88e5
+            );
+            color: #222;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            min-height: 75px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 60px;
+            background: rgba(0, 0, 0, 0.20);
+            color: white;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #64b5f6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            width: 95%;
+            max-width: 1500px;
+            margin: 40px auto;
+        }
+
+        .page-card {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        h1 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .customer-info {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* ================= MESSAGES ================= */
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .request-table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        .request-table th {
+            background: #1565c0;
+            color: white;
+            padding: 14px;
+            text-align: left;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .request-table td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+            font-size: 14px;
+            max-width: 300px;
+            word-break: break-word;
+        }
+
+        .request-table tr:hover {
+            background: #f5f9ff;
+        }
+
+        /* ================= FIELD ================= */
+
+        .field-name {
+            font-weight: bold;
+            color: #1565c0;
+            white-space: nowrap;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .approved {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .rejected {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .unknown {
+            background: #eeeeee;
+            color: #555;
+        }
+
+        /* ================= MESSAGE ================= */
+
+        .request-message {
+            line-height: 1.5;
+            color: #444;
+        }
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #777;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .empty h3 {
+            margin-bottom: 10px;
+        }
+
+        /* ================= BACK ================= */
+
+        .back-button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 11px 20px;
+            background: #1565c0;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .back-button:hover {
+            background: #0d47a1;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .container {
+                width: 95%;
+            }
+
+            .page-card {
+                padding: 20px;
+            }
+
+            .request-table {
+                min-width: 900px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <div class="navbar">
+
+        <div class="logo">
+
+            <span>eKYC</span> Management System
+
+        </div>
+
+        <div class="nav-buttons">
+
+            <a href="/customer-dashboard"
+               class="nav-button">
+
+                Dashboard
+
+            </a>
+
+            <a href="/logout"
+               class="nav-button">
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="container">
+
+        <div class="page-card">
+
+            <!-- ================= TITLE ================= -->
+
+            <h1>
+                Customer Requests
+            </h1>
+
+            <p class="customer-info">
+
+                Customer:
+
+                <strong th:text="${customer.fullName}">
+                    Customer
+                </strong>
+
+                &nbsp; | &nbsp;
+
+                Customer ID:
+
+                <strong th:text="${customer.customerId}">
+                    -
+                </strong>
+
+            </p>
+
+
+            <!-- ================= SUCCESS ================= -->
+
+            <div
+                th:if="${session.requestSuccess != null}"
+                class="success">
+
+                ✓
+
+                <span th:text="${session.requestSuccess}">
+                    Request submitted successfully.
+                </span>
+
+            </div>
+
+
+            <!-- ================= ERROR ================= -->
+
+            <div
+                th:if="${session.requestError != null}"
+                class="error">
+
+                ✕
+
+                <span th:text="${session.requestError}">
+                    Unable to process request.
+                </span>
+
+            </div>
+
+
+            <!-- ================= REQUEST TABLE ================= -->
+
+            <div
+                th:if="${requests != null && !requests.isEmpty()}"
+                class="table-container">
+
+                <table class="request-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Request Type</th>
+
+                            <th>Field</th>
+
+                            <th>Message</th>
+
+                            <th>Status</th>
+
+                            <th>Request Date</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr th:each="request : ${requests}">
+
+                            <!-- ================= ID ================= -->
+
+                            <td th:text="${request.id}">
+                                -
+                            </td>
+
+
+                            <!-- ================= REQUEST TYPE ================= -->
+
+                            <td th:text="${request.requestType}">
+                                -
+                            </td>
+
+
+                            <!-- ================= FIELD ================= -->
+
+                            <td>
+
+                                <span
+                                    th:if="${request.fieldName != null && !request.fieldName.isEmpty()}"
+                                    class="field-name"
+                                    th:text="${request.fieldName}">
+                                    -
+                                </span>
+
+                                <span
+                                    th:if="${request.fieldName == null || request.fieldName.isEmpty()}">
+                                    -
+                                </span>
+
+                            </td>
+
+
+                            <!-- ================= MESSAGE ================= -->
+
+                            <td>
+
+                                <div
+                                    class="request-message"
+                                    th:text="${request.message != null && !request.message.isEmpty() ? request.message : '-'}">
+
+                                    -
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- ================= STATUS ================= -->
+
+                            <td>
+
+                                <!-- PENDING -->
+
+                                <span
+                                    th:if="${request.status == 'PENDING'}"
+                                    class="status pending">
+
+                                    PENDING
+
+                                </span>
+
+
+                                <!-- APPROVED -->
+
+                                <span
+                                    th:if="${request.status == 'APPROVED'}"
+                                    class="status approved">
+
+                                    APPROVED
+
+                                </span>
+
+
+                                <!-- REJECTED -->
+
+                                <span
+                                    th:if="${request.status == 'REJECTED'}"
+                                    class="status rejected">
+
+                                    REJECTED
+
+                                </span>
+
+
+                                <!-- OTHER STATUS -->
+
+                                <span
+                                    th:if="${request.status != null
+                                        && request.status != 'PENDING'
+                                        && request.status != 'APPROVED'
+                                        && request.status != 'REJECTED'}"
+                                    class="status unknown"
+                                    th:text="${request.status}">
+
+                                    -
+
+                                </span>
+
+
+                                <!-- NULL / EMPTY STATUS -->
+
+                                <span
+                                    th:if="${request.status == null || request.status.isEmpty()}"
+                                    class="status unknown">
+
+                                    UNKNOWN
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ================= REQUEST DATE ================= -->
+
+                            <td
+                                th:text="${request.requestDate != null
+                                    ? #temporals.format(request.requestDate, 'dd-MM-yyyy HH:mm')
+                                    : '-'}">
+
+                                -
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- ================= NO REQUESTS ================= -->
+
+            <div
+                th:if="${requests == null || requests.isEmpty()}"
+                class="empty">
+
+                <h3>
+                    No Customer Requests
+                </h3>
+
+                <p>
+                    You have not submitted any requests yet.
+                </p>
+
+            </div>
+
+
+            <!-- ================= BACK ================= -->
+
+            <a
+                href="/customer-dashboard"
+                class="back-button">
+
+                ← Back to Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

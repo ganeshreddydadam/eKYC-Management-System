@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+
+<html lang="en"
+
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Customer KYC Details</title>
+
+    <style>
+
+        * {
+
+            box-sizing: border-box;
+
+        }
+
+        body {
+
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f8fc;
+
+            color: #222;
+
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+
+            background: #0b3d6e;
+
+            color: white;
+
+            padding: 18px 45px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+
+        }
+
+        .logo {
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+        }
+
+        .nav-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+
+        }
+
+        .logout {
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 9px 17px;
+
+            border-radius: 6px;
+
+            background: rgba(255,255,255,0.15);
+
+        }
+
+        .logout:hover {
+
+            background: rgba(255,255,255,0.25);
+
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+
+            width: 94%;
+
+            max-width: 1200px;
+
+            margin: 35px auto;
+
+        }
+
+        /* ================= HEADER ================= */
+
+        .page-header {
+
+            background: white;
+
+            padding: 28px;
+
+            border-radius: 14px;
+
+            margin-bottom: 25px;
+
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+
+        }
+
+        .page-header h1 {
+
+            margin: 0 0 8px;
+
+            color: #0b5fa5;
+
+            font-size: 28px;
+
+        }
+
+        .page-header p {
+
+            margin: 0;
+
+            color: #666;
+
+        }
+
+        /* ================= CARD ================= */
+
+        .card {
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 14px;
+
+            margin-bottom: 25px;
+
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+
+        }
+
+        .card h2 {
+
+            margin-top: 0;
+
+            color: #0b5fa5;
+
+            border-bottom: 1px solid #e5e5e5;
+
+            padding-bottom: 12px;
+
+        }
+
+        /* ================= GRID ================= */
+
+        .details-grid {
+
+            display: grid;
+
+            grid-template-columns:
+
+                repeat(2, minmax(0, 1fr));
+
+            gap: 18px;
+
+        }
+
+        .detail-item {
+
+            background: #f7faff;
+
+            border: 1px solid #e1eaf3;
+
+            border-radius: 8px;
+
+            padding: 15px;
+
+        }
+
+        .label {
+
+            display: block;
+
+            font-size: 13px;
+
+            color: #777;
+
+            margin-bottom: 7px;
+
+        }
+
+        .value {
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            color: #222;
+
+            word-break: break-word;
+
+        }
+
+        /* ================= CHANGE ================= */
+
+        .change-box {
+
+            display: grid;
+
+            grid-template-columns:
+
+                1fr 60px 1fr;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+        .old-value,
+
+        .new-value {
+
+            padding: 18px;
+
+            border-radius: 9px;
+
+            border: 1px solid #ddd;
+
+        }
+
+        .old-value {
+
+            background: #fff5f5;
+
+            border-color: #f1c5c5;
+
+        }
+
+        .new-value {
+
+            background: #f0fff5;
+
+            border-color: #bde5c8;
+
+        }
+
+        .change-label {
+
+            font-size: 12px;
+
+            color: #777;
+
+            margin-bottom: 7px;
+
+        }
+
+        .change-value {
+
+            font-weight: bold;
+
+            word-break: break-word;
+
+        }
+
+        .arrow {
+
+            text-align: center;
+
+            font-size: 28px;
+
+            color: #0b5fa5;
+
+        }
+
+        /* ================= STATUS ================= */
+
+        .status {
+
+            display: inline-block;
+
+            padding: 7px 14px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+        }
+
+        .verified {
+
+            background: #e7f7ec;
+
+            color: #16833b;
+
+        }
+
+        .failed {
+
+            background: #ffe7e7;
+
+            color: #c62828;
+
+        }
+
+        .pending {
+
+            background: #fff4d6;
+
+            color: #9a6700;
+
+        }
+
+        .processing {
+
+            background: #eaf2ff;
+
+            color: #1769aa;
+
+        }
+
+        .default-status {
+
+            background: #e8eef5;
+
+            color: #455a64;
+
+        }
+
+        /* ================= SCORE ================= */
+
+        .score {
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            color: #16833b;
+
+        }
+
+        /* ================= PROOF ================= */
+
+        .proof-section {
+
+            display: grid;
+
+            grid-template-columns:
+
+                1fr 1fr;
+
+            gap: 25px;
+
+        }
+
+        .proof-box {
+
+            border: 1px solid #e1eaf3;
+
+            background: #f8fbff;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+        }
+
+        .proof-box h3 {
+
+            margin-top: 0;
+
+            color: #0b5fa5;
+
+        }
+
+        .proof-image {
+
+            max-width: 100%;
+
+            max-height: 300px;
+
+            display: block;
+
+            margin: 15px auto;
+
+            border-radius: 8px;
+
+            border: 1px solid #ddd;
+
+        }
+
+        /* ================= TABLE ================= */
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+        }
+
+        th {
+
+            background: #0b5fa5;
+
+            color: white;
+
+            padding: 13px;
+
+            text-align: left;
+
+            font-size: 14px;
+
+        }
+
+        td {
+
+            padding: 13px;
+
+            border-bottom: 1px solid #e5e5e5;
+
+            font-size: 14px;
+
+        }
+
+        tr:hover {
+
+            background: #f8fbff;
+
+        }
+
+        /* ================= PDF ================= */
+
+        .pdf-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            padding: 15px;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 8px;
+
+            margin-bottom: 12px;
+
+            background: #f9fbfd;
+
+        }
+
+        .pdf-info {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+
+        }
+
+        .pdf-name {
+
+            font-weight: bold;
+
+        }
+
+        .pdf-meta {
+
+            font-size: 13px;
+
+            color: #777;
+
+        }
+
+        .download-button {
+
+            display: inline-block;
+
+            padding: 9px 16px;
+
+            background: #1769aa;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 7px;
+
+            white-space: nowrap;
+
+        }
+
+        .download-button:hover {
+
+            background: #0d568d;
+
+        }
+
+        /* ================= BACK ================= */
+
+        .back-button {
+
+            display: inline-block;
+
+            padding: 11px 20px;
+
+            background: #555;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 7px;
+
+            margin-bottom: 25px;
+
+        }
+
+        .back-button:hover {
+
+            background: #333;
+
+        }
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+
+            padding: 30px;
+
+            text-align: center;
+
+            color: #777;
+
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 800px) {
+
+            .details-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .change-box {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .arrow {
+
+                transform: rotate(90deg);
+
+            }
+
+            .proof-section {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .pdf-row {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+            }
+
+            .navbar {
+
+                padding: 15px 20px;
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 10px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+
+     NAVBAR
+
+     ========================================================= -->
+
+<div class="navbar">
+
+    <div class="logo">
+
+        eKYC Management System
+
+    </div>
+
+    <div class="nav-right">
+
+        <span>
+
+            Admin
+
+        </span>
+
+        <a href="/logout"
+
+           class="logout">
+
+            Logout
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+
+     MAIN
+
+     ========================================================= -->
+
+<div class="container">
+
+
+    <!-- BACK -->
+
+    <a href="/admin/dashboard"
+
+       class="back-button">
+
+        ← Back to Customer KYC History
+
+    </a>
+
+
+    <!-- =====================================================
+
+         HEADER
+
+         ===================================================== -->
+
+    <div class="page-header">
+
+        <h1>
+
+            Customer KYC Details
+
+        </h1>
+
+        <p>
+
+            Read-only view of the customer's KYC update history.
+
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+
+         CUSTOMER INFORMATION
+
+         ===================================================== -->
+
+    <div class="card">
+
+        <h2>
+
+            Customer Information
+
+        </h2>
+
+
+        <div class="details-grid">
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Customer ID
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${customer != null ? customer.customerId : request.customerId}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Full Name
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${customer != null ? customer.fullName : '-'}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Father's Name
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${customer != null ? customer.fatherName : '-'}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Mobile
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${customer != null ? customer.mobile : '-'}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Aadhaar Number
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${customer != null ? customer.aadhaarNumber : '-'}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    PAN Number
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${customer != null ? customer.panNumber : '-'}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+
+         WHAT CHANGED
+
+         ===================================================== -->
+
+    <div class="card">
+
+        <h2>
+
+            KYC Change
+
+        </h2>
+
+
+        <div class="details-grid">
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Field Changed
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${request.fieldName}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Proof Type
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${request.verificationType}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Request Date
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${request.requestDate}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Completed Date
+
+                </span>
+
+                <span class="value"
+
+                      th:text="${request.completedDate}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <br>
+
+
+        <div class="change-box">
+
+
+            <div class="old-value">
+
+                <div class="change-label">
+
+                    Previous Value
+
+                </div>
+
+                <div class="change-value"
+
+                     th:text="${request.oldValue}">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="arrow">
+
+                →
+
+            </div>
+
+
+            <div class="new-value">
+
+                <div class="change-label">
+
+                    New Value
+
+                </div>
+
+                <div class="change-value"
+
+                     th:text="${request.newValue}">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+
+         VERIFICATION
+
+         ===================================================== -->
+
+    <div class="card">
+
+        <h2>
+
+            Face Verification Result
+
+        </h2>
+
+
+        <div class="details-grid">
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Verification Status
+
+                </span>
+
+
+                <span class="status verified"
+
+                      th:if="${request.verificationStatus == 'VERIFIED'}">
+
+                    VERIFIED
+
+                </span>
+
+
+                <span class="status failed"
+
+                      th:if="${request.verificationStatus == 'FAILED'}">
+
+                    FAILED
+
+                </span>
+
+
+                <span class="status pending"
+
+                      th:if="${request.verificationStatus == 'PENDING'}">
+
+                    PENDING
+
+                </span>
+
+
+                <span class="status processing"
+
+                      th:if="${request.verificationStatus == 'PROCESSING'}">
+
+                    PROCESSING
+
+                </span>
+
+
+                <span class="status default-status"
+
+                      th:if="${request.verificationStatus != 'VERIFIED'
+
+                             && request.verificationStatus != 'FAILED'
+
+                             && request.verificationStatus != 'PENDING'
+
+                             && request.verificationStatus != 'PROCESSING'}"
+
+                      th:text="${request.verificationStatus}">
+
+                    -
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-item">
+
+                <span class="label">
+
+                    Face Match Score
+
+                </span>
+
+                <span class="score"
+
+                      th:if="${request.faceMatchScore != null}"
+
+                      th:text="${request.faceMatchScore}">
+
+                    -
+
+                </span>
+
+                <span
+
+                      th:if="${request.faceMatchScore == null}">
+
+                    Not Available
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+
+         PROOF INFORMATION
+
+         ===================================================== -->
+
+    <div class="card">
+
+        <h2>
+
+            Uploaded Proof
+
+        </h2>
+
+
+        <div class="proof-section">
+
+
+            <!-- PROOF FILE -->
+
+            <div class="proof-box">
+
+                <h3>
+
+                    Proof Document
+
+                </h3>
+
+                <p>
+
+                    <strong>
+
+                        Type:
+
+                    </strong>
+
+                    <span
+
+                            th:text="${request.verificationType}">
+
+                        -
+
+                    </span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+
+                        File:
+
+                    </strong>
+
+                    <span
+
+                            th:text="${request.proofFile}">
+
+                        -
+
+                    </span>
+
+                </p>
+
+
+                <a
+
+                        th:if="${request.proofFile != null}"
+
+                        th:href="@{/admin/proof/{id}(id=${request.id})}"
+
+                        target="_blank"
+
+                        class="download-button">
+
+                    View Proof
+
+                </a>
+
+            </div>
+
+
+            <!-- EXTRACTED PHOTO -->
+
+            <div class="proof-box">
+
+                <h3>
+
+                    Extracted Proof Photo
+
+                </h3>
+
+
+                <img
+
+                        th:if="${request.proofPhoto != null}"
+
+                        th:src="@{'/uploads/' + ${request.proofPhoto}}"
+
+                        class="proof-image"
+
+                        alt="Proof Photo">
+
+
+                <p
+
+                        th:if="${request.proofPhoto == null}">
+
+                    Proof photo not available.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+
+         KYC CHANGE HISTORY
+
+         ===================================================== -->
+
+    <div class="card">
+
+        <h2>
+
+            Customer KYC Change History
+
+        </h2>
+
+
+        <table
+
+                th:if="${histories != null && !histories.isEmpty()}">
+
+            <thead>
+
+            <tr>
+
+                <th>
+
+                    Field
+
+                </th>
+
+                <th>
+
+                    Previous Value
+
+                </th>
+
+                <th>
+
+                    New Value
+
+                </th>
+
+                <th>
+
+                    Proof Type
+
+                </th>
+
+                <th>
+
+                    Verification
+
+                </th>
+
+                <th>
+
+                    Face Score
+
+                </th>
+
+                <th>
+
+                    Changed At
+
+                </th>
+
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            <tr
+
+                    th:each="history : ${histories}">
+
+
+                <td
+
+                        th:text="${history.fieldName}">
+
+                    -
+
+                </td>
+
+
+                <td
+
+                        th:text="${history.oldValue}">
+
+                    -
+
+                </td>
+
+
+                <td
+
+                        th:text="${history.newValue}">
+
+                    -
+
+                </td>
+
+
+                <td
+
+                        th:text="${history.proofType}">
+
+                    -
+
+                </td>
+
+
+                <td
+
+                        th:text="${history.verificationStatus}">
+
+                    -
+
+                </td>
+
+
+                <td
+
+                        th:text="${history.faceMatchScore}">
+
+                    -
+
+                </td>
+
+
+                <td
+
+                        th:text="${history.changedAt}">
+
+                    -
+
+                </td>
+
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <div
+
+                class="empty"
+
+                th:if="${histories == null || histories.isEmpty()}">
+
+            No previous KYC changes found.
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+
+         DOCUMENT VERSIONS
+
+         ===================================================== -->
+
+    <div class="card">
+
+        <h2>
+
+            Updated Signed KYC Documents
+
+        </h2>
+
+
+        <div
+
+                th:if="${documentVersions != null && !documentVersions.isEmpty()}">
+
+
+            <div
+
+                    class="pdf-row"
+
+                    th:each="version : ${documentVersions}">
+
+
+                <div class="pdf-info">
+
+                    <span class="pdf-name"
+
+                          th:text="${version.fileName}">
+
+                        KYC PDF
+
+                    </span>
+
+
+                    <span class="pdf-meta">
+
+                        Version:
+
+                        <strong
+
+                                th:text="${version.versionNumber}">
+
+                            -
+
+                        </strong>
+
+                    </span>
+
+
+                    <span class="pdf-meta">
+
+                        Signature Status:
+
+                        <strong
+
+                                th:text="${version.signatureStatus}">
+
+                            -
+
+                        </strong>
+
+                    </span>
+
+
+                    <span class="pdf-meta"
+
+                          th:text="${version.signedAt}">
+
+                        -
+
+                    </span>
+
+                </div>
+
+
+                <a
+
+                        th:if="${version.filePath != null}"
+
+                        th:href="@{'/admin/kyc/download-signed?id=' + ${version.id}}"
+
+                        target="_blank"
+
+                        class="download-button">
+
+                    View Signed PDF
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+
+        <div
+
+                class="empty"
+
+                th:if="${documentVersions == null || documentVersions.isEmpty()}">
+
+            No signed KYC document versions available.
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

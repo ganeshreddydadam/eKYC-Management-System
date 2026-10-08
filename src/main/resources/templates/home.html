@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>eKYC Management System</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #071e3d,
+                #1261a0,
+                #1e88e5
+            );
+            color: white;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================== */
+
+        .navbar {
+            height: 75px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 0 60px;
+
+            background: rgba(0, 0, 0, 0.20);
+
+            border-bottom: 1px solid
+                        rgba(255, 255, 255, 0.15);
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #64b5f6;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            color: white;
+
+            text-decoration: none;
+
+            padding: 11px 22px;
+
+            border-radius: 7px;
+
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* =========================
+           HERO SECTION
+        ========================== */
+
+        .hero {
+            min-height: 500px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 60px 20px;
+        }
+
+        .hero-content {
+            max-width: 950px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+
+            line-height: 1.2;
+
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: #90caf9;
+        }
+
+        .hero p {
+            font-size: 19px;
+
+            line-height: 1.7;
+
+            color: #e3f2fd;
+
+            margin-bottom: 35px;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================== */
+
+        .buttons {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 38px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            transition: 0.3s;
+
+            display: inline-block;
+        }
+
+        .register-btn {
+            background: white;
+
+            color: #1565c0;
+        }
+
+        .proceed-btn {
+            background: #1976d2;
+
+            color: white;
+
+            border: 1px solid white;
+        }
+
+        .login-btn {
+            background: transparent;
+
+            color: white;
+
+            border: 1px solid white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        /* =========================
+           INFORMATION SECTION
+        ========================== */
+
+        .section {
+            background: #f5f9ff;
+
+            color: #222;
+
+            padding: 60px;
+        }
+
+        .section-title {
+            text-align: center;
+
+            color: #1565c0;
+
+            font-size: 30px;
+
+            margin-bottom: 40px;
+        }
+
+        .cards {
+            max-width: 1100px;
+
+            margin: auto;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0, 0, 0, 0.10);
+
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon {
+            font-size: 42px;
+
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            color: #1565c0;
+
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: #666;
+
+            line-height: 1.6;
+        }
+
+        /* =========================
+           HOW IT WORKS
+        ========================== */
+
+        .workflow {
+            background: #ffffff;
+
+            color: #222;
+
+            padding: 60px;
+        }
+
+        .workflow-title {
+            text-align: center;
+
+            color: #1565c0;
+
+            font-size: 30px;
+
+            margin-bottom: 40px;
+        }
+
+        .steps {
+            max-width: 1000px;
+
+            margin: auto;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 20px;
+        }
+
+        .step {
+            text-align: center;
+
+            padding: 25px;
+
+            background: #f5f9ff;
+
+            border-radius: 12px;
+
+            border: 1px solid #e1ecf7;
+        }
+
+        .step-number {
+            width: 50px;
+
+            height: 50px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            background: #1565c0;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 20px;
+
+            font-weight: bold;
+        }
+
+        .step h3 {
+            color: #1565c0;
+
+            margin-bottom: 10px;
+        }
+
+        .step p {
+            color: #666;
+
+            line-height: 1.5;
+
+            font-size: 14px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        footer {
+            background: #06172e;
+
+            text-align: center;
+
+            padding: 20px;
+
+            color: #bcd5ed;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 900px) {
+
+            .navbar {
+                padding: 0 25px;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                height: auto;
+
+                padding: 20px;
+
+                flex-direction: column;
+
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+
+                justify-content: center;
+            }
+
+            .hero {
+                padding: 50px 20px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .buttons {
+                flex-direction: column;
+
+                align-items: center;
+            }
+
+            .btn {
+                width: 230px;
+            }
+
+            .section,
+            .workflow {
+                padding: 45px 20px;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+====================================================== -->
+
+<div class="navbar">
+
+    <div class="logo">
+        <span>eKYC</span> Management System
+    </div>
+
+    <div class="nav-links">
+
+        <a href="/">
+            Home
+        </a>
+
+        <a href="/register">
+            Register
+        </a>
+
+        <a href="/login">
+            Login
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     HERO
+====================================================== -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <h1>
+            Online
+            <span>eKYC Registration</span>
+            and Verification Portal
+        </h1>
+
+        <p>
+            A secure and efficient platform for customer
+            registration, identity verification, KYC management
+            and request tracking. Manage your Aadhaar, PAN and
+            KYC information from one place.
+        </p>
+
+
+        <!-- MAIN ACTION BUTTONS -->
+
+        <div class="buttons">
+
+            <!-- REGISTER -->
+
+            <a href="/register"
+               class="btn register-btn">
+
+                REGISTER
+
+            </a>
+
+
+           
+
+
+            <!-- LOGIN -->
+
+            <a href="/login"
+               class="btn login-btn">
+
+                LOGIN
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     eKYC SERVICES
+====================================================== -->
+
+<section class="section">
+
+    <h2 class="section-title">
+        eKYC Services
+    </h2>
+
+
+    <div class="cards">
+
+
+        <!-- CARD 1 -->
+
+        <div class="card">
+
+            <div class="icon">
+                👤
+            </div>
+
+            <h3>
+                Customer Registration
+            </h3>
+
+            <p>
+                Register customer details securely and
+                create an account for eKYC services.
+            </p>
+
+        </div>
+
+
+        <!-- CARD 2 -->
+
+        <div class="card">
+
+            <div class="icon">
+                🔐
+            </div>
+
+            <h3>
+                KYC Verification
+            </h3>
+
+            <p>
+                Manage Aadhaar, PAN and other identity
+                verification information securely.
+            </p>
+
+        </div>
+
+
+        <!-- CARD 3 -->
+
+        <div class="card">
+
+            <div class="icon">
+                📊
+            </div>
+
+            <h3>
+                Request Tracking
+            </h3>
+
+            <p>
+                Submit KYC requests and track their
+                status through the system.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     HOW IT WORKS
+====================================================== -->
+
+<section class="workflow">
+
+    <h2 class="workflow-title">
+        How eKYC Works
+    </h2>
+
+
+    <div class="steps">
+
+
+        <!-- STEP 1 -->
+
+        <div class="step">
+
+            <div class="step-number">
+                1
+            </div>
+
+            <h3>
+                Register
+            </h3>
+
+            <p>
+                Create your customer account by
+                providing the required details.
+            </p>
+
+        </div>
+
+
+        <!-- STEP 2 -->
+
+        <div class="step">
+
+            <div class="step-number">
+                2
+            </div>
+
+            <h3>
+                Proceed eKYC
+            </h3>
+
+            <p>
+                Start your eKYC process and provide
+                your identity information.
+            </p>
+
+        </div>
+
+
+        <!-- STEP 3 -->
+
+        <div class="step">
+
+            <div class="step-number">
+                3
+            </div>
+
+            <h3>
+                Submit
+            </h3>
+
+            <p>
+                Submit your Aadhaar and PAN details
+                for eKYC processing.
+            </p>
+
+        </div>
+
+
+        <!-- STEP 4 -->
+
+        <div class="step">
+
+            <div class="step-number">
+                4
+            </div>
+
+            <h3>
+                Track
+            </h3>
+
+            <p>
+                Track your eKYC request and view
+                the current verification status.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     FOOTER
+====================================================== -->
+
+<footer>
+
+    © 2026 eKYC Management System
+    |
+    Secure Digital KYC Platform
+
+</footer>
+
+
+</body>
+
+</html>

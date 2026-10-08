@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>eKYC Submitted Successfully</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(
+                135deg,
+                #071e3d,
+                #1261a0,
+                #1e88e5
+            );
+
+            color: white;
+        }
+
+        .success-container {
+            width: 90%;
+            max-width: 600px;
+
+            background: white;
+            color: #222;
+
+            padding: 45px;
+
+            border-radius: 18px;
+
+            text-align: center;
+
+            box-shadow:
+                0 15px 40px rgba(0,0,0,0.30);
+        }
+
+        .success-icon {
+            width: 90px;
+            height: 90px;
+
+            margin: 0 auto 25px;
+
+            border-radius: 50%;
+
+            background: #e8f5e9;
+
+            color: #2e7d32;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 50px;
+        }
+
+        h1 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            font-size: 18px;
+            color: #444;
+            margin-bottom: 25px;
+        }
+
+        .customer-id {
+            background: #f1f7ff;
+
+            border-left: 5px solid #1565c0;
+
+            padding: 15px;
+
+            margin-bottom: 30px;
+
+            border-radius: 6px;
+
+            font-size: 16px;
+        }
+
+        .customer-id strong {
+            color: #1565c0;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+
+            padding: 13px 28px;
+
+            border-radius: 7px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+            transition: 0.3s;
+        }
+
+        .home-btn {
+            background: #1565c0;
+            color: white;
+        }
+
+        .dashboard-btn {
+            background: white;
+            color: #1565c0;
+
+            border: 2px solid #1565c0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .footer-text {
+            margin-top: 25px;
+
+            font-size: 13px;
+
+            color: #777;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="success-container">
+
+    <div class="success-icon">
+        ✓
+    </div>
+
+    <h1>
+        eKYC Submitted Successfully!
+    </h1>
+
+    <p class="message"
+       th:text="${message}">
+        Your eKYC request has been submitted successfully.
+    </p>
+
+    <div class="customer-id"
+         th:if="${customerId != null}">
+
+        Customer ID:
+
+        <strong th:text="${customerId}">
+            Customer ID
+        </strong>
+
+    </div>
+
+    <div class="buttons">
+
+        <a href="/" class="btn home-btn">
+            Back to Home
+        </a>
+
+        
+
+    </div>
+
+    <p class="footer-text">
+        Your eKYC request has been recorded successfully.
+    </p>
+
+</div>
+
+</body>
+
+</html>

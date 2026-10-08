@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - Customer KYC History</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f8fc;
+            color: #222;
+        }
+
+        /* =====================================================
+           NAVBAR
+           ===================================================== */
+
+        .navbar {
+            background: #0b3d6e;
+            color: white;
+
+            padding: 18px 45px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .admin-label {
+            font-size: 15px;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+
+            padding: 9px 17px;
+
+            border-radius: 6px;
+
+            background: rgba(255,255,255,0.15);
+        }
+
+        .logout:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* =====================================================
+           MAIN
+           ===================================================== */
+
+        .container {
+            width: 94%;
+            max-width: 1400px;
+
+            margin: 35px auto;
+        }
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        .header-card {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 14px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                    0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .header-card h1 {
+            margin: 0 0 10px;
+
+            color: #0b5fa5;
+
+            font-size: 30px;
+        }
+
+        .header-card p {
+            margin: 0;
+
+            color: #666;
+
+            font-size: 16px;
+        }
+
+        /* =====================================================
+           HISTORY CARD
+           ===================================================== */
+
+        .history-card {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                    0 5px 20px rgba(0,0,0,0.08);
+
+            overflow-x: auto;
+        }
+
+        .history-title {
+            margin-top: 0;
+
+            margin-bottom: 20px;
+
+            color: #0b5fa5;
+        }
+
+        /* =====================================================
+           TABLE
+           ===================================================== */
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 1000px;
+        }
+
+        th {
+            background: #0b5fa5;
+
+            color: white;
+
+            padding: 14px 12px;
+
+            text-align: left;
+
+            font-size: 14px;
+        }
+
+        td {
+            padding: 14px 12px;
+
+            border-bottom: 1px solid #e5e5e5;
+
+            font-size: 14px;
+
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f7fbff;
+        }
+
+        /* =====================================================
+           STATUS
+           ===================================================== */
+
+        .status {
+            display: inline-block;
+
+            padding: 6px 12px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+        }
+
+        .verified {
+            background: #e7f7ec;
+            color: #16833b;
+        }
+
+        .failed {
+            background: #ffe7e7;
+            color: #c62828;
+        }
+
+        .processing {
+            background: #fff4d6;
+            color: #9a6700;
+        }
+
+        .pending {
+            background: #fff4d6;
+            color: #9a6700;
+        }
+
+        .completed {
+            background: #e7f7ec;
+            color: #16833b;
+        }
+
+        .default-status {
+            background: #e8eef5;
+            color: #455a64;
+        }
+
+        /* =====================================================
+           VIEW BUTTON
+           ===================================================== */
+
+        .view-button {
+            display: inline-block;
+
+            padding: 9px 16px;
+
+            background: #1769aa;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            font-weight: 500;
+
+            transition: 0.2s;
+        }
+
+        .view-button:hover {
+            background: #0d568d;
+
+            transform: translateY(-1px);
+        }
+
+        /* =====================================================
+           EMPTY
+           ===================================================== */
+
+        .empty {
+            text-align: center;
+
+            padding: 50px 20px;
+
+            color: #777;
+
+            font-size: 17px;
+        }
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        .footer {
+            text-align: center;
+
+            margin-top: 30px;
+
+            color: #777;
+
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 15px 20px;
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 8px;
+            }
+
+            .container {
+                width: 95%;
+
+                margin: 20px auto;
+            }
+
+            .header-card,
+            .history-card {
+                padding: 18px;
+            }
+
+            .header-card h1 {
+                font-size: 25px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVBAR
+     ========================================================= -->
+
+<div class="navbar">
+
+    <div class="logo">
+        eKYC Management System
+    </div>
+
+    <div class="admin-label">
+        Admin Dashboard
+    </div>
+
+    <a href="/logout"
+       class="logout">
+
+        Logout
+
+    </a>
+
+</div>
+
+
+<!-- =========================================================
+     MAIN CONTAINER
+     ========================================================= -->
+
+<div class="container">
+
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="header-card">
+
+        <h1>
+            Customer KYC History
+        </h1>
+
+        <p>
+            View customer KYC changes, proof information,
+            face verification results and updated PDF versions.
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         HISTORY
+         ===================================================== -->
+
+    <div class="history-card">
+
+        <h2 class="history-title">
+            Customer Changes
+        </h2>
+
+
+        <!-- =================================================
+             TABLE
+             ================================================= -->
+
+        <table
+                th:if="${requests != null && !requests.isEmpty()}">
+
+            <thead>
+
+            <tr>
+
+                <th>
+                    Customer ID
+                </th>
+
+                <th>
+                    Field Changed
+                </th>
+
+                <th>
+                    Old Value
+                </th>
+
+                <th>
+                    New Value
+                </th>
+
+                <th>
+                    Proof Type
+                </th>
+
+                <th>
+                    Verification
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Date & Time
+                </th>
+
+                <th>
+                    Action
+                </th>
+
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            <tr
+                    th:each="request : ${requests}">
+
+
+                <!-- CUSTOMER ID -->
+
+                <td>
+
+                    <strong
+                            th:text="${request.customerId}">
+
+                        -
+
+                    </strong>
+
+                </td>
+
+
+                <!-- FIELD -->
+
+                <td
+                        th:text="${request.fieldName}">
+
+                    -
+
+                </td>
+
+
+                <!-- OLD VALUE -->
+
+                <td
+                        th:text="${request.oldValue}">
+
+                    -
+
+                </td>
+
+
+                <!-- NEW VALUE -->
+
+                <td
+                        th:text="${request.newValue}">
+
+                    -
+
+                </td>
+
+
+                <!-- PROOF TYPE -->
+
+                <td
+                        th:text="${request.verificationType}">
+
+                    -
+
+                </td>
+
+
+                <!-- VERIFICATION -->
+
+                <td>
+
+
+                    <span
+                            class="status verified"
+                            th:if="${request.verificationStatus == 'VERIFIED'}">
+
+                        VERIFIED
+
+                    </span>
+
+
+                    <span
+                            class="status failed"
+                            th:if="${request.verificationStatus == 'FAILED'}">
+
+                        FAILED
+
+                    </span>
+
+
+                    <span
+                            class="status pending"
+                            th:if="${request.verificationStatus == 'PENDING'}">
+
+                        PENDING
+
+                    </span>
+
+
+                    <span
+                            class="status processing"
+                            th:if="${request.verificationStatus == 'PROCESSING'}">
+
+                        PROCESSING
+
+                    </span>
+
+
+                    <span
+                            class="status default-status"
+                            th:if="${request.verificationStatus != 'VERIFIED'
+                                   && request.verificationStatus != 'FAILED'
+                                   && request.verificationStatus != 'PENDING'
+                                   && request.verificationStatus != 'PROCESSING'}"
+                            th:text="${request.verificationStatus}">
+
+                        -
+
+                    </span>
+
+                </td>
+
+
+                <!-- REQUEST STATUS -->
+
+                <td>
+
+
+                    <span
+                            class="status completed"
+                            th:if="${request.status == 'COMPLETED'}">
+
+                        COMPLETED
+
+                    </span>
+
+
+                    <span
+                            class="status verified"
+                            th:if="${request.status == 'VERIFIED'}">
+
+                        VERIFIED
+
+                    </span>
+
+
+                    <span
+                            class="status failed"
+                            th:if="${request.status == 'FAILED'}">
+
+                        FAILED
+
+                    </span>
+
+
+                    <span
+                            class="status processing"
+                            th:if="${request.status == 'PROCESSING'}">
+
+                        PROCESSING
+
+                    </span>
+
+
+                    <span
+                            class="status pending"
+                            th:if="${request.status == 'PENDING'}">
+
+                        PENDING
+
+                    </span>
+
+
+                    <span
+                            class="status default-status"
+                            th:if="${request.status != 'COMPLETED'
+                                   && request.status != 'VERIFIED'
+                                   && request.status != 'FAILED'
+                                   && request.status != 'PROCESSING'
+                                   && request.status != 'PENDING'}"
+                            th:text="${request.status}">
+
+                        -
+
+                    </span>
+
+                </td>
+
+
+                <!-- DATE -->
+
+                <td
+                        th:text="${request.requestDate}">
+
+                    -
+
+                </td>
+
+
+                <!-- DETAILS -->
+
+                <td>
+
+                    <a
+                            class="view-button"
+                            th:href="@{/admin/request-details(id=${request.id})}">
+
+                        View Details
+
+                    </a>
+
+                </td>
+
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <!-- =================================================
+             NO RECORDS
+             ================================================= -->
+
+        <div
+                class="empty"
+                th:if="${requests == null || requests.isEmpty()}">
+
+            No customer KYC history found.
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <div class="footer">
+
+        eKYC Management System
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

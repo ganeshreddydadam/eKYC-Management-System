@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KYC Information Update - eKYC Management System</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #071e3d,
+                #1261a0,
+                #1e88e5
+            );
+            color: #222;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        .navbar {
+            height: 75px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 60px;
+            background: rgba(0, 0, 0, 0.20);
+            color: white;
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #64b5f6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            width: 90%;
+            max-width: 850px;
+            margin: 40px auto;
+        }
+
+        /* ================= CARD ================= */
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .card h1 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* ================= MESSAGES ================= */
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        /* ================= CUSTOMER INFO ================= */
+
+        .customer-info {
+            background: #f5f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .customer-info h3 {
+            color: #1565c0;
+            margin-bottom: 12px;
+        }
+
+        .customer-info p {
+            margin: 7px 0;
+            color: #444;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        select,
+        input[type="text"],
+        input[type="date"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            outline: none;
+            background: white;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            border-color: #1565c0;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* ================= CURRENT VALUE ================= */
+
+        .current-value {
+            background: #f1f3f4;
+            padding: 12px;
+            border-radius: 7px;
+            color: #555;
+            min-height: 42px;
+        }
+
+        /* ================= OTP ================= */
+
+        .otp-section {
+            display: none;
+            background: #f5f9ff;
+            border: 1px solid #bbdefb;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .otp-section h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+
+        .otp-button,
+        .verify-button {
+            margin-top: 10px;
+            padding: 11px 18px;
+            border: none;
+            border-radius: 7px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .otp-button {
+            background: #1565c0;
+        }
+
+        .otp-button:hover {
+            background: #0d47a1;
+        }
+
+        .verify-button {
+            background: #2e7d32;
+        }
+
+        .verify-button:hover {
+            background: #1b5e20;
+        }
+
+        .otp-message {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .verified {
+            color: #2e7d32;
+        }
+
+        .not-verified {
+            color: #c62828;
+        }
+
+        /* ================= PROOF ================= */
+
+        #proofSection {
+            display: none;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        #proofSection h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+
+        .proof-note {
+            display: block;
+            margin-top: 7px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* ================= LIVE FACE ================= */
+
+        #faceVerificationSection {
+            display: none;
+            background: #f5f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #bbdefb;
+            margin-bottom: 20px;
+        }
+
+        #faceVerificationSection h3 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .face-note {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .camera-container {
+            text-align: center;
+        }
+
+        #cameraVideo {
+            width: 100%;
+            max-width: 450px;
+            height: 340px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #1565c0;
+            background: #000;
+            display: none;
+            margin: auto;
+        }
+
+        #capturedFace {
+            width: 100%;
+            max-width: 450px;
+            height: 340px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #2e7d32;
+            display: none;
+            margin: auto;
+        }
+
+        .camera-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .camera-button {
+            padding: 11px 20px;
+            border: none;
+            border-radius: 7px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .start-camera-button {
+            background: #1565c0;
+        }
+
+        .capture-button {
+            background: #2e7d32;
+        }
+
+        .retake-button {
+            background: #ef6c00;
+        }
+
+        .confirm-face-button {
+            background: #1565c0;
+        }
+
+        .camera-status {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .camera-success {
+            color: #2e7d32;
+        }
+
+        .camera-error {
+            color: #c62828;
+        }
+
+        /* ================= SUBMIT ================= */
+
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 7px;
+            background: #1565c0;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background: #0d47a1;
+        }
+
+        .submit-button:disabled {
+            background: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        /* ================= BACK ================= */
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 11px 20px;
+            background: #607d8b;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .back-button:hover {
+            background: #455a64;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .card {
+                padding: 22px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<div class="navbar">
+
+    <div class="logo">
+        <span>eKYC</span> Management System
+    </div>
+
+    <div class="nav-buttons">
+
+        <a href="/customer-dashboard"
+           class="nav-button">
+            Dashboard
+        </a>
+
+        <a href="/logout"
+           class="nav-button">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ================= MAIN ================= -->
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>KYC Information Update</h1>
+
+        <p class="subtitle">
+            Select the information you want to update and provide
+            the required details and proof.
+        </p>
+
+
+        <!-- ================= SUCCESS ================= -->
+
+        <div th:if="${session.kycUpdateSuccess != null}"
+             class="success-message">
+
+            ✓
+
+            <span th:text="${session.kycUpdateSuccess}">
+                Request submitted successfully.
+            </span>
+
+        </div>
+
+
+        <!-- ================= ERROR ================= -->
+
+        <div th:if="${session.kycUpdateError != null}"
+             class="error-message">
+
+            ⚠
+
+            <span th:text="${session.kycUpdateError}">
+                Unable to process request.
+            </span>
+
+        </div>
+
+
+        <!-- ================= CUSTOMER INFORMATION ================= -->
+
+        <div class="customer-info">
+
+            <h3>Customer Information</h3>
+
+            <p>
+                <span class="label">
+                    Customer ID:
+                </span>
+
+                <span th:text="${customer.customerId}">
+                    -
+                </span>
+            </p>
+
+            <p>
+                <span class="label">
+                    Name:
+                </span>
+
+                <span th:text="${customer.fullName}">
+                    -
+                </span>
+            </p>
+
+            <p>
+                <span class="label">
+                    Mobile:
+                </span>
+
+                <span th:text="${customer.mobile}">
+                    -
+                </span>
+            </p>
+
+        </div>
+
+
+        <!-- ================= FORM ================= -->
+
+        <form action="/submit-kyc-update"
+              method="post"
+              enctype="multipart/form-data"
+              id="kycUpdateForm">
+
+
+            <!-- CUSTOMER ID -->
+
+            <input type="hidden"
+                   name="customerId"
+                   id="customerId"
+                   th:value="${customer.customerId}">
+
+
+            <!-- OLD VALUE -->
+
+            <input type="hidden"
+                   name="oldValue"
+                   id="oldValue">
+
+
+            <!-- LIVE FACE PHOTO -->
+
+            <input type="hidden"
+                   name="liveFacePhoto"
+                   id="liveFacePhoto">
+
+
+            <!-- ================= UPDATE FIELD ================= -->
+
+            <div class="form-group">
+
+                <label for="updateField">
+                    What do you want to update?
+                </label>
+
+                <select id="updateField"
+                        name="updateField"
+                        required
+                        onchange="handleUpdateField()">
+
+                    <option value="">
+                        Select Information
+                    </option>
+
+                    <option value="AADHAAR_NAME">
+                        Aadhaar Name
+                    </option>
+
+                    <option value="AADHAAR_DOB">
+                        Aadhaar Date of Birth
+                    </option>
+
+                    <option value="AADHAAR_MOBILE">
+                        Aadhaar Mobile Number
+                    </option>
+
+                    <option value="AADHAAR_ADDRESS">
+                        Aadhaar Address
+                    </option>
+
+                    <option value="PAN_NAME">
+                        PAN Name
+                    </option>
+
+                    <option value="PAN_DOB">
+                        PAN Date of Birth
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================= CURRENT VALUE ================= -->
+
+            <div class="form-group">
+
+                <label>
+                    Current Value
+                </label>
+
+                <div class="current-value">
+
+                    <span id="currentValueText">
+                        Select information first
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= NORMAL NEW VALUE ================= -->
+
+            <div class="form-group"
+                 id="normalNewValueSection">
+
+                <label for="newValue">
+                    New Value
+                </label>
+
+                <input type="text"
+                       id="newValue"
+                       name="newValue"
+                       placeholder="Enter new information">
+
+            </div>
+
+
+            <!-- ================= MOBILE OTP ================= -->
+
+            <div class="otp-section"
+                 id="mobileOtpSection">
+
+                <h3>
+                    Mobile Number Verification
+                </h3>
+
+                <div class="form-group">
+
+                    <label for="mobileNumber">
+                        New Mobile Number
+                    </label>
+
+                    <input type="text"
+                           id="mobileNumber"
+                           maxlength="10"
+                           inputmode="numeric"
+                           autocomplete="tel"
+                           placeholder="Enter 10-digit mobile number">
+
+                    <button type="button"
+                            class="otp-button"
+                            onclick="sendMobileOtp()">
+
+                        Send OTP
+
+                    </button>
+
+                </div>
+
+
+                <div class="form-group"
+                     id="otpInputSection"
+                     style="display:none;">
+
+                    <label for="mobileOtp">
+                        Enter OTP
+                    </label>
+
+                    <input type="text"
+                           id="mobileOtp"
+                           maxlength="6"
+                           inputmode="numeric"
+                           autocomplete="one-time-code"
+                           placeholder="Enter 6-digit OTP">
+
+                    <button type="button"
+                            class="verify-button"
+                            onclick="verifyMobileOtp()">
+
+                        Verify OTP
+
+                    </button>
+
+                    <p id="otpMessage"
+                       class="otp-message">
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= REASON ================= -->
+
+            <div class="form-group">
+
+                <label for="reason">
+                    Reason for Change
+                </label>
+
+                <select id="reason"
+                        name="reason"
+                        required>
+
+                    <option value="">
+                        Select Reason
+                    </option>
+
+                    <option value="NAME CORRECTION">
+                        Name Correction
+                    </option>
+
+                    <option value="DATE OF BIRTH CORRECTION">
+                        Date of Birth Correction
+                    </option>
+
+                    <option value="MOBILE NUMBER CHANGE">
+                        Mobile Number Change
+                    </option>
+
+                    <option value="ADDRESS CHANGE">
+                        Address Change
+                    </option>
+
+                    <option value="OTHER">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================= ADDITIONAL DETAILS ================= -->
+
+            <div class="form-group">
+
+                <label for="additionalMessage">
+                    Additional Details (Optional)
+                </label>
+
+                <textarea id="additionalMessage"
+                          name="additionalMessage"
+                          placeholder="Enter any additional information"></textarea>
+
+            </div>
+
+
+            <!-- ================= PROOF SECTION ================= -->
+
+            <div id="proofSection">
+
+                <h3>
+                    Government Proof
+                </h3>
+
+
+                <!-- PROOF TYPE -->
+
+                <div class="form-group">
+
+                    <label for="proofType">
+                        Proof Type
+                    </label>
+
+                    <select id="proofType"
+                            name="proofType"
+                            disabled>
+
+                        <option value="">
+                            Select Proof
+                        </option>
+
+                    </select>
+
+                    <small class="proof-note">
+                        Select the government document that supports
+                        the requested KYC change.
+                    </small>
+
+                </div>
+
+
+                <!-- PROOF FILE -->
+
+                <div class="form-group">
+
+                    <label for="proofFile">
+                        Upload Proof
+                    </label>
+
+                    <input type="file"
+                           id="proofFile"
+                           name="proofFile"
+                           accept=".pdf,.jpg,.jpeg,.png"
+                           disabled>
+
+                    <small class="proof-note">
+                        Upload a clear copy of the selected government document.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==========================================================
+                 LIVE FACE VERIFICATION
+                 ========================================================== -->
+
+            <div id="faceVerificationSection">
+
+                <h3>
+                    Live Face Verification
+                </h3>
+
+                <p class="face-note">
+
+                    After uploading your government proof,
+                    capture your live face using the camera.
+
+                    Make sure your face is clearly visible
+                    and there is enough lighting.
+
+                </p>
+
+
+                <div class="camera-container">
+
+                    <!-- CAMERA -->
+
+                    <video id="cameraVideo"
+                           autoplay
+                           playsinline>
+                    </video>
+
+
+                    <!-- CAPTURED PHOTO -->
+
+                    <canvas id="capturedFace">
+                    </canvas>
+
+
+                    <!-- CAMERA BUTTONS -->
+
+                    <div class="camera-buttons">
+
+                        <button type="button"
+                                id="startCameraButton"
+                                class="camera-button start-camera-button"
+                                onclick="startCamera()">
+
+                            START CAMERA
+
+                        </button>
+
+
+                        <button type="button"
+                                id="captureFaceButton"
+                                class="camera-button capture-button"
+                                onclick="captureFace()"
+                                style="display:none;">
+
+                            CAPTURE LIVE PHOTO
+
+                        </button>
+
+
+                        <button type="button"
+                                id="retakeFaceButton"
+                                class="camera-button retake-button"
+                                onclick="retakeFace()"
+                                style="display:none;">
+
+                            RETAKE
+
+                        </button>
+
+
+                        <button type="button"
+                                id="confirmFaceButton"
+                                class="camera-button confirm-face-button"
+                                onclick="confirmFace()"
+                                style="display:none;">
+
+                            CONFIRM PHOTO
+
+                        </button>
+
+                    </div>
+
+
+                    <p id="cameraStatus"
+                       class="camera-status">
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= SUBMIT ================= -->
+
+            <button type="submit"
+                    class="submit-button"
+                    id="submitButton"
+                    disabled>
+
+                SUBMIT KYC UPDATE
+
+            </button>
+
+        </form>
+
+
+        <!-- ================= BACK ================= -->
+
+        <a href="/customer-dashboard"
+           class="back-button">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ================= HIDDEN CUSTOMER VALUES ================= -->
+
+<input type="hidden"
+       id="customerName"
+       th:value="${customer.fullName}">
+
+<input type="hidden"
+       id="customerDob"
+       th:value="${customer.dateOfBirth}">
+
+<input type="hidden"
+       id="customerMobile"
+       th:value="${customer.mobile}">
+
+<input type="hidden"
+       id="customerAddress"
+       th:value="${customer.address}">
+
+
+<script>
+
+    let mobileOtpVerified = false;
+
+    let cameraStream = null;
+
+    let liveFaceCaptured = false;
+
+    let liveFaceConfirmed = false;
+
+
+    /* ==========================================================
+       UPDATE CURRENT VALUE
+       ========================================================== */
+
+    function updateCurrentValue(updateField) {
+
+        const currentValueElement =
+            document.getElementById("currentValueText");
+
+        const oldValueElement =
+            document.getElementById("oldValue");
+
+        const customerName =
+            document.getElementById("customerName").value;
+
+        const customerDob =
+            document.getElementById("customerDob").value;
+
+        const customerMobile =
+            document.getElementById("customerMobile").value;
+
+        const customerAddress =
+            document.getElementById("customerAddress").value;
+
+        const values = {
+
+            AADHAAR_NAME: customerName,
+
+            PAN_NAME: customerName,
+
+            AADHAAR_DOB: customerDob,
+
+            PAN_DOB: customerDob,
+
+            AADHAAR_MOBILE: customerMobile,
+
+            AADHAAR_ADDRESS: customerAddress
+
+        };
+
+        if (updateField === "") {
+
+            currentValueElement.innerText =
+                "Select information first";
+
+            oldValueElement.value = "";
+
+            return;
+        }
+
+        const currentValue =
+            values[updateField] || "Not available";
+
+        currentValueElement.innerText =
+            currentValue;
+
+        oldValueElement.value =
+            currentValue;
+    }
+
+
+    /* ==========================================================
+       UPDATE PROOF OPTIONS
+       ========================================================== */
+
+    function updateProofOptions(updateField) {
+
+        const proofType =
+            document.getElementById("proofType");
+
+        proofType.innerHTML = "";
+
+        const defaultOption =
+            document.createElement("option");
+
+        defaultOption.value = "";
+
+        defaultOption.textContent =
+            "Select Proof";
+
+        proofType.appendChild(defaultOption);
+
+
+        function addProofOption(value) {
+
+            const option =
+                document.createElement("option");
+
+            option.value = value;
+
+            option.textContent = value;
+
+            proofType.appendChild(option);
+        }
+
+
+        if (updateField === "AADHAAR_NAME") {
+
+            addProofOption("AADHAAR CARD");
+            addProofOption("PASSPORT");
+            addProofOption("VOTER ID");
+            addProofOption("DRIVING LICENSE");
+            addProofOption("NAME CHANGE CERTIFICATE");
+            addProofOption("GAZETTE NOTIFICATION");
+            addProofOption("OTHER GOVERNMENT DOCUMENT");
+
+        }
+
+
+        else if (updateField === "AADHAAR_DOB") {
+
+            addProofOption("AADHAAR CARD");
+            addProofOption("BIRTH CERTIFICATE");
+            addProofOption("PASSPORT");
+            addProofOption("10TH CERTIFICATE");
+            addProofOption("DRIVING LICENSE");
+            addProofOption("OTHER GOVERNMENT DOCUMENT");
+
+        }
+
+
+        else if (updateField === "AADHAAR_ADDRESS") {
+
+            addProofOption("AADHAAR CARD");
+            addProofOption("PASSPORT");
+            addProofOption("VOTER ID");
+            addProofOption("DRIVING LICENSE");
+            addProofOption("RATION CARD");
+            addProofOption("GOVERNMENT ADDRESS CERTIFICATE");
+            addProofOption("OTHER GOVERNMENT DOCUMENT");
+
+        }
+
+
+        else if (updateField === "PAN_NAME") {
+
+            addProofOption("AADHAAR CARD");
+            addProofOption("PASSPORT");
+            addProofOption("VOTER ID");
+            addProofOption("NAME CHANGE CERTIFICATE");
+            addProofOption("GAZETTE NOTIFICATION");
+            addProofOption("OTHER GOVERNMENT DOCUMENT");
+
+        }
+
+
+        else if (updateField === "PAN_DOB") {
+
+            addProofOption("AADHAAR CARD");
+            addProofOption("BIRTH CERTIFICATE");
+            addProofOption("PASSPORT");
+            addProofOption("10TH CERTIFICATE");
+            addProofOption("DRIVING LICENSE");
+            addProofOption("GOVERNMENT DOB CERTIFICATE");
+            addProofOption("OTHER GOVERNMENT DOCUMENT");
+
+        }
+
+    }
+
+
+    /* ==========================================================
+       HANDLE UPDATE FIELD
+       ========================================================== */
+
+    function handleUpdateField() {
+
+        const updateField =
+            document.getElementById("updateField").value;
+
+        const mobileOtpSection =
+            document.getElementById("mobileOtpSection");
+
+        const proofSection =
+            document.getElementById("proofSection");
+
+        const faceSection =
+            document.getElementById("faceVerificationSection");
+
+        const normalNewValueSection =
+            document.getElementById("normalNewValueSection");
+
+        const newValue =
+            document.getElementById("newValue");
+
+        const mobileNumber =
+            document.getElementById("mobileNumber");
+
+        const mobileOtp =
+            document.getElementById("mobileOtp");
+
+        const otpInputSection =
+            document.getElementById("otpInputSection");
+
+        const otpMessage =
+            document.getElementById("otpMessage");
+
+        const proofType =
+            document.getElementById("proofType");
+
+        const proofFile =
+            document.getElementById("proofFile");
+
+        const submitButton =
+            document.getElementById("submitButton");
+
+
+        updateCurrentValue(updateField);
+
+        updateProofOptions(updateField);
+
+
+        liveFaceCaptured = false;
+
+        liveFaceConfirmed = false;
+
+        document.getElementById("liveFacePhoto").value = "";
+
+        stopCamera();
+
+        resetCameraUI();
+
+
+        /* ================= NOTHING SELECTED ================= */
+
+        if (updateField === "") {
+
+            mobileOtpSection.style.display = "none";
+
+            normalNewValueSection.style.display = "block";
+
+            proofSection.style.display = "none";
+
+            faceSection.style.display = "none";
+
+            newValue.value = "";
+
+            newValue.required = false;
+
+            proofType.required = false;
+
+            proofFile.required = false;
+
+            proofType.disabled = true;
+
+            proofFile.disabled = true;
+
+            submitButton.disabled = true;
+
+            mobileOtpVerified = false;
+
+            return;
+        }
+
+
+        /* ================= MOBILE UPDATE ================= */
+
+        if (updateField === "AADHAAR_MOBILE") {
+
+            mobileOtpSection.style.display = "block";
+
+            normalNewValueSection.style.display = "none";
+
+            proofSection.style.display = "none";
+
+            faceSection.style.display = "none";
+
+            newValue.value = "";
+
+            newValue.required = false;
+
+            newValue.disabled = false;
+
+            proofType.required = false;
+
+            proofFile.required = false;
+
+            proofType.disabled = true;
+
+            proofFile.disabled = true;
+
+            submitButton.disabled = true;
+
+            mobileOtpVerified = false;
+
+            mobileNumber.value = "";
+
+            mobileOtp.value = "";
+
+            otpInputSection.style.display = "none";
+
+            otpMessage.innerText = "";
+
+            otpMessage.className =
+                "otp-message";
+
+            return;
+        }
+
+
+        /* ================= OTHER KYC UPDATES ================= */
+
+        mobileOtpSection.style.display = "none";
+
+        normalNewValueSection.style.display = "block";
+
+        newValue.disabled = false;
+
+        newValue.required = true;
+
+        proofSection.style.display = "block";
+
+        proofType.disabled = false;
+
+        proofFile.disabled = false;
+
+        proofType.required = true;
+
+        proofFile.required = true;
+
+        submitButton.disabled = true;
+
+
+        /* ================= INPUT TYPE ================= */
+
+        if (
+            updateField === "AADHAAR_DOB" ||
+            updateField === "PAN_DOB"
+        ) {
+
+            newValue.type = "date";
+
+            newValue.placeholder = "";
+
+        }
+
+        else if (
+            updateField === "AADHAAR_ADDRESS"
+        ) {
+
+            newValue.type = "text";
+
+            newValue.placeholder =
+                "Enter new address";
+
+        }
+
+        else {
+
+            newValue.type = "text";
+
+            newValue.placeholder =
+                "Enter new information";
+
+        }
+
+    }
+
+
+    /* ==========================================================
+       SEND MOBILE OTP
+       ========================================================== */
+
+    function sendMobileOtp() {
+
+        const mobile =
+            document.getElementById("mobileNumber")
+                .value.trim();
+
+        if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+
+            alert(
+                "Please enter a valid 10-digit Indian mobile number."
+            );
+
+            return;
+        }
+
+        mobileOtpVerified = false;
+
+        fetch(
+            "/send-mobile-otp?mobile="
+            + encodeURIComponent(mobile),
+            {
+                method: "POST"
+            }
+        )
+
+        .then(response => response.text())
+
+        .then(result => {
+
+            if (result === "OTP_SENT") {
+
+                document.getElementById(
+                    "otpInputSection"
+                ).style.display = "block";
+
+                document.getElementById(
+                    "otpMessage"
+                ).innerText =
+                    "OTP sent successfully. Check the Eclipse console for the OTP.";
+
+                document.getElementById(
+                    "otpMessage"
+                ).className =
+                    "otp-message";
+
+            }
+
+            else if (result === "INVALID_MOBILE") {
+
+                alert(
+                    "Invalid mobile number."
+                );
+
+            }
+
+            else {
+
+                alert(
+                    "Unable to send OTP."
+                );
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            alert(
+                "Error while sending OTP."
+            );
+
+        });
+    }
+
+
+    /* ==========================================================
+       VERIFY MOBILE OTP
+       ========================================================== */
+
+    function verifyMobileOtp() {
+
+        const mobile =
+            document.getElementById("mobileNumber")
+                .value.trim();
+
+        const otp =
+            document.getElementById("mobileOtp")
+                .value.trim();
+
+        if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+
+            alert(
+                "Please enter a valid mobile number."
+            );
+
+            return;
+        }
+
+        if (!/^[0-9]{6}$/.test(otp)) {
+
+            alert(
+                "Please enter the 6-digit OTP."
+            );
+
+            return;
+        }
+
+        fetch(
+            "/verify-mobile-otp?mobile="
+            + encodeURIComponent(mobile)
+            + "&otp="
+            + encodeURIComponent(otp),
+            {
+                method: "POST"
+            }
+        )
+
+        .then(response => response.text())
+
+        .then(result => {
+
+            const message =
+                document.getElementById(
+                    "otpMessage"
+                );
+
+
+            if (result === "OTP_VERIFIED") {
+
+                mobileOtpVerified = true;
+
+                message.innerText =
+                    "✓ Mobile number verified successfully.";
+
+                message.className =
+                    "otp-message verified";
+
+                document.getElementById(
+                    "newValue"
+                ).value = mobile;
+
+                document.getElementById(
+                    "submitButton"
+                ).disabled = false;
+
+                alert(
+                    "Mobile number verified successfully."
+                );
+            }
+
+
+            else if (result === "INVALID_OTP") {
+
+                mobileOtpVerified = false;
+
+                message.innerText =
+                    "✗ Invalid OTP. Please try again.";
+
+                message.className =
+                    "otp-message not-verified";
+            }
+
+
+            else if (result === "OTP_EXPIRED") {
+
+                mobileOtpVerified = false;
+
+                message.innerText =
+                    "✗ OTP expired. Please send a new OTP.";
+
+                message.className =
+                    "otp-message not-verified";
+            }
+
+
+            else if (result === "MOBILE_MISMATCH") {
+
+                mobileOtpVerified = false;
+
+                message.innerText =
+                    "✗ Mobile number mismatch.";
+
+                message.className =
+                    "otp-message not-verified";
+            }
+
+
+            else {
+
+                mobileOtpVerified = false;
+
+                message.innerText =
+                    "✗ OTP verification failed.";
+
+                message.className =
+                    "otp-message not-verified";
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            alert(
+                "Error while verifying OTP."
+            );
+
+        });
+    }
+
+
+    /* ==========================================================
+       PROOF FILE SELECTED
+       ========================================================== */
+
+    document
+        .getElementById("proofFile")
+        .addEventListener(
+            "change",
+            function() {
+
+                const proofFile =
+                    document.getElementById("proofFile");
+
+                const faceSection =
+                    document.getElementById(
+                        "faceVerificationSection"
+                    );
+
+                const submitButton =
+                    document.getElementById(
+                        "submitButton"
+                    );
+
+                const liveFacePhoto =
+                    document.getElementById(
+                        "liveFacePhoto"
+                    );
+
+
+                liveFaceCaptured = false;
+
+                liveFaceConfirmed = false;
+
+                liveFacePhoto.value = "";
+
+
+                if (proofFile.files.length > 0) {
+
+                    faceSection.style.display =
+                        "block";
+
+                    submitButton.disabled =
+                        true;
+
+                    resetCameraUI();
+
+                }
+
+                else {
+
+                    faceSection.style.display =
+                        "none";
+
+                    submitButton.disabled =
+                        true;
+
+                }
+
+            }
+        );
+
+
+    /* ==========================================================
+       START CAMERA
+       ========================================================== */
+
+    function startCamera() {
+
+        const video =
+            document.getElementById("cameraVideo");
+
+        const startButton =
+            document.getElementById(
+                "startCameraButton"
+            );
+
+        const captureButton =
+            document.getElementById(
+                "captureFaceButton"
+            );
+
+        const status =
+            document.getElementById(
+                "cameraStatus"
+            );
+
+
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
+
+            status.innerText =
+                "Camera is not supported by this browser.";
+
+            status.className =
+                "camera-status camera-error";
+
+            return;
+        }
+
+
+        navigator.mediaDevices
+            .getUserMedia({
+                video: {
+                    facingMode: "user",
+                    width: {
+                        ideal: 640
+                    },
+                    height: {
+                        ideal: 480
+                    }
+                },
+                audio: false
+            })
+
+            .then(function(stream) {
+
+                cameraStream = stream;
+
+                video.srcObject = stream;
+
+                video.style.display =
+                    "block";
+
+                startButton.style.display =
+                    "none";
+
+                captureButton.style.display =
+                    "inline-block";
+
+                status.innerText =
+                    "Camera started. Position your face clearly and capture.";
+
+                status.className =
+                    "camera-status";
+
+            })
+
+            .catch(function(error) {
+
+                console.error(
+                    "Camera error:",
+                    error
+                );
+
+                status.innerText =
+                    "Unable to access camera. Please allow camera permission.";
+
+                status.className =
+                    "camera-status camera-error";
+
+            });
+    }
+
+
+    /* ==========================================================
+       CAPTURE LIVE PHOTO
+       ========================================================== */
+
+    function captureFace() {
+
+        const video =
+            document.getElementById(
+                "cameraVideo"
+            );
+
+        const canvas =
+            document.getElementById(
+                "capturedFace"
+            );
+
+        const captureButton =
+            document.getElementById(
+                "captureFaceButton"
+            );
+
+        const retakeButton =
+            document.getElementById(
+                "retakeFaceButton"
+            );
+
+        const confirmButton =
+            document.getElementById(
+                "confirmFaceButton"
+            );
+
+        const status =
+            document.getElementById(
+                "cameraStatus"
+            );
+
+
+        if (!cameraStream) {
+
+            status.innerText =
+                "Please start the camera first.";
+
+            status.className =
+                "camera-status camera-error";
+
+            return;
+        }
+
+
+        if (
+            video.videoWidth === 0 ||
+            video.videoHeight === 0
+        ) {
+
+            status.innerText =
+                "Camera is not ready. Please wait a moment.";
+
+            status.className =
+                "camera-status camera-error";
+
+            return;
+        }
+
+
+        canvas.width =
+            video.videoWidth;
+
+        canvas.height =
+            video.videoHeight;
+
+
+        const context =
+            canvas.getContext("2d");
+
+
+        context.drawImage(
+            video,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        /*
+         * Convert the captured image
+         * to Base64 JPEG.
+         */
+        const imageData =
+            canvas.toDataURL(
+                "image/jpeg",
+                0.90
+            );
+
+
+        /*
+         * Store the actual live photo
+         * in the hidden form field.
+         */
+        document.getElementById(
+            "liveFacePhoto"
+        ).value = imageData;
+
+
+        liveFaceCaptured = true;
+
+        liveFaceConfirmed = false;
+
+
+        stopCamera();
+
+
+        video.style.display =
+            "none";
+
+        canvas.style.display =
+            "block";
+
+
+        captureButton.style.display =
+            "none";
+
+        retakeButton.style.display =
+            "inline-block";
+
+        confirmButton.style.display =
+            "inline-block";
+
+
+        status.innerText =
+            "Live photo captured. Please review the photo.";
+
+        status.className =
+            "camera-status";
+    }
+
+
+    /* ==========================================================
+       STOP CAMERA
+       ========================================================== */
+
+    function stopCamera() {
+
+        if (cameraStream) {
+
+            cameraStream
+                .getTracks()
+                .forEach(function(track) {
+
+                    track.stop();
+
+                });
+
+            cameraStream = null;
+        }
+    }
+
+
+    /* ==========================================================
+       RETAKE LIVE PHOTO
+       ========================================================== */
+
+    function retakeFace() {
+
+        document.getElementById(
+            "liveFacePhoto"
+        ).value = "";
+
+        liveFaceCaptured = false;
+
+        liveFaceConfirmed = false;
+
+        stopCamera();
+
+        resetCameraUI();
+
+        document.getElementById(
+            "cameraStatus"
+        ).innerText =
+            "Click START CAMERA to capture again.";
+    }
+
+
+    /* ==========================================================
+       CONFIRM LIVE PHOTO
+       ========================================================== */
+
+    function confirmFace() {
+
+        if (!liveFaceCaptured) {
+
+            alert(
+                "Please capture your live photo first."
+            );
+
+            return;
+        }
+
+
+        const status =
+            document.getElementById(
+                "cameraStatus"
+            );
+
+        const confirmButton =
+            document.getElementById(
+                "confirmFaceButton"
+            );
+
+        const retakeButton =
+            document.getElementById(
+                "retakeFaceButton"
+            );
+
+        const submitButton =
+            document.getElementById(
+                "submitButton"
+            );
+
+
+        liveFaceConfirmed = true;
+
+
+        status.innerText =
+            "✓ Live face photo confirmed.";
+
+        status.className =
+            "camera-status camera-success";
+
+
+        confirmButton.style.display =
+            "none";
+
+        retakeButton.style.display =
+            "none";
+
+
+        /*
+         * Now allow final form submission.
+         *
+         * Actual face matching will be performed
+         * by the backend in the next step.
+         */
+        submitButton.disabled =
+            false;
+    }
+
+
+    /* ==========================================================
+       RESET CAMERA UI
+       ========================================================== */
+
+    function resetCameraUI() {
+
+        const video =
+            document.getElementById(
+                "cameraVideo"
+            );
+
+        const canvas =
+            document.getElementById(
+                "capturedFace"
+            );
+
+        const startButton =
+            document.getElementById(
+                "startCameraButton"
+            );
+
+        const captureButton =
+            document.getElementById(
+                "captureFaceButton"
+            );
+
+        const retakeButton =
+            document.getElementById(
+                "retakeFaceButton"
+            );
+
+        const confirmButton =
+            document.getElementById(
+                "confirmFaceButton"
+            );
+
+        const status =
+            document.getElementById(
+                "cameraStatus"
+            );
+
+
+        video.style.display =
+            "none";
+
+        canvas.style.display =
+            "none";
+
+        startButton.style.display =
+            "inline-block";
+
+        captureButton.style.display =
+            "none";
+
+        retakeButton.style.display =
+            "none";
+
+        confirmButton.style.display =
+            "none";
+
+        status.innerText = "";
+
+        status.className =
+            "camera-status";
+    }
+
+
+    /* ==========================================================
+       FORM SUBMISSION
+       ========================================================== */
+
+    document
+        .getElementById("kycUpdateForm")
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                const updateField =
+                    document.getElementById(
+                        "updateField"
+                    ).value;
+
+
+                const oldValue =
+                    document.getElementById(
+                        "oldValue"
+                    ).value.trim();
+
+
+                if (oldValue === "") {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Current value is not available."
+                    );
+
+                    return;
+                }
+
+
+                /* ================= MOBILE UPDATE ================= */
+
+                if (
+                    updateField ===
+                    "AADHAAR_MOBILE"
+                ) {
+
+                    if (!mobileOtpVerified) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Please verify the new mobile number using OTP before submitting."
+                        );
+
+                        return;
+                    }
+
+
+                    const mobile =
+                        document.getElementById(
+                            "mobileNumber"
+                        ).value.trim();
+
+
+                    if (
+                        !/^[6-9][0-9]{9}$/.test(
+                            mobile
+                        )
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Please enter a valid mobile number."
+                        );
+
+                        return;
+                    }
+
+
+                    document.getElementById(
+                        "newValue"
+                    ).value = mobile;
+
+                    return;
+                }
+
+
+                /* ================= OTHER KYC UPDATES ================= */
+
+                const newValue =
+                    document.getElementById(
+                        "newValue"
+                    ).value.trim();
+
+
+                const reason =
+                    document.getElementById(
+                        "reason"
+                    ).value;
+
+
+                const proofType =
+                    document.getElementById(
+                        "proofType"
+                    ).value;
+
+
+                const proofFile =
+                    document.getElementById(
+                        "proofFile"
+                    ).files.length;
+
+
+                if (newValue === "") {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter the new information."
+                    );
+
+                    return;
+                }
+
+
+                if (reason === "") {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please select the reason."
+                    );
+
+                    return;
+                }
+
+
+                if (proofType === "") {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please select the proof type."
+                    );
+
+                    return;
+                }
+
+
+                if (proofFile === 0) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please upload the required proof."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * LIVE FACE IS REQUIRED
+                 * for proof-based KYC changes.
+                 */
+
+                if (!liveFaceCaptured) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please capture your live face photo."
+                    );
+
+                    return;
+                }
+
+
+                if (!liveFaceConfirmed) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please confirm your live face photo."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * Make sure the Base64 live photo
+                 * actually exists.
+                 */
+
+                const liveFacePhoto =
+                    document.getElementById(
+                        "liveFacePhoto"
+                    ).value;
+
+
+                if (
+                    liveFacePhoto === ""
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Live face photo is missing."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * Stop camera before submission.
+                 */
+
+                stopCamera();
+
+            }
+        );
+
+
+    /* ==========================================================
+       INITIAL STATE
+       ========================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            const proofSection =
+                document.getElementById(
+                    "proofSection"
+                );
+
+            const proofType =
+                document.getElementById(
+                    "proofType"
+                );
+
+            const proofFile =
+                document.getElementById(
+                    "proofFile"
+                );
+
+            const faceSection =
+                document.getElementById(
+                    "faceVerificationSection"
+                );
+
+            const submitButton =
+                document.getElementById(
+                    "submitButton"
+                );
+
+
+            proofSection.style.display =
+                "none";
+
+            faceSection.style.display =
+                "none";
+
+            proofType.disabled =
+                true;
+
+            proofFile.disabled =
+                true;
+
+            proofType.required =
+                false;
+
+            proofFile.required =
+                false;
+
+            submitButton.disabled =
+                true;
+
+            handleUpdateField();
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

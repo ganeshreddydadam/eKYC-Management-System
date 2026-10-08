@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin - KYC Requests</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(
+                135deg,
+                #071e3d,
+                #1261a0,
+                #1e88e5
+            );
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+        }
+
+        h1 {
+            color: #071e3d;
+            text-align: center;
+        }
+
+        .message {
+            background: #e7f7ed;
+            color: #187a3d;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .error {
+            background: #ffe6e6;
+            color: #b00020;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        th {
+            background: #071e3d;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        tr:hover {
+            background: #f5f8fb;
+        }
+
+        .pending {
+            color: #d68910;
+            font-weight: bold;
+        }
+
+        .view-btn {
+            display: inline-block;
+            padding: 8px 15px;
+            background: #1261a0;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .view-btn:hover {
+            background: #071e3d;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Admin - KYC Update Requests</h1>
+
+
+    <!-- SUCCESS -->
+
+    <div class="message"
+         th:if="${message}"
+         th:text="${message}">
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div class="error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+
+    <!-- NO REQUESTS -->
+
+    <div class="empty"
+         th:if="${#lists.isEmpty(requests)}">
+
+        <h2>No Pending Requests</h2>
+
+        <p>
+            There are currently no KYC update requests
+            waiting for verification.
+        </p>
+
+    </div>
+
+
+    <!-- REQUEST TABLE -->
+
+    <table th:if="${not #lists.isEmpty(requests)}">
+
+        <thead>
+
+        <tr>
+
+            <th>ID</th>
+
+            <th>Customer ID</th>
+
+            <th>Request Type</th>
+
+            <th>Field</th>
+
+            <th>Request Date</th>
+
+            <th>Status</th>
+
+            <th>Action</th>
+
+        </tr>
+
+        </thead>
+
+
+        <tbody>
+
+        <tr th:each="request : ${requests}">
+
+            <td th:text="${request.id}">
+                1
+            </td>
+
+            <td th:text="${request.customerId}">
+                CUS123
+            </td>
+
+            <td th:text="${request.requestType}">
+                MOBILE UPDATE
+            </td>
+
+            <td th:text="${request.fieldName}">
+                MOBILE
+            </td>
+
+            <td th:text="${request.requestDate}">
+                Date
+            </td>
+
+            <td class="pending"
+                th:text="${request.status}">
+                PENDING
+            </td>
+
+            <td>
+
+                <a class="view-btn"
+                   th:href="@{/admin/request-details(id=${request.id})}">
+
+                    View Request
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+
+</html>

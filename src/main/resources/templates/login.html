@@ -1,0 +1,250 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>eKYC Management System - Login</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #071e3d, #1261a0, #1e88e5);
+            color: white;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            height: 75px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 60px;
+            background: rgba(0,0,0,0.20);
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #64b5f6;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* LOGIN AREA */
+
+        .login-section {
+            min-height: calc(100vh - 75px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .login-box {
+            width: 450px;
+            background: white;
+            color: #222;
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.3);
+        }
+
+        .login-box h1 {
+            text-align: center;
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .login-box .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 7px;
+            background: #1976d2;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-button:hover {
+            background: #0d47a1;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .links a {
+            color: #1565c0;
+            text-decoration: none;
+        }
+
+        .links p {
+            margin-top: 12px;
+        }
+
+        /* ERROR MESSAGE */
+
+        .error {
+            background: #ffe5e5;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+    <div class="logo">
+        <span>eKYC</span> Management System
+    </div>
+
+    <div class="nav-links">
+
+        <a href="/">Home</a>
+
+        <a href="/register">
+            Register
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- LOGIN -->
+
+<section class="login-section">
+
+    <div class="login-box">
+
+        <h1>Customer Login</h1>
+
+        <p class="subtitle">
+            Login to your eKYC account
+        </p>
+
+
+        <!-- ERROR MESSAGE -->
+
+        <div class="error"
+             th:if="${error}"
+             th:text="${error}">
+        </div>
+
+
+        <!-- LOGIN FORM -->
+
+		<form action="/login" method="post">
+
+		    <label>
+		        Customer ID
+		    </label>
+
+		    <input
+		        type="text"
+		        name="customerId"
+		        placeholder="Enter your Customer ID"
+		        required
+		        autocomplete="off"
+		    >
+
+		    <button
+		        type="submit"
+		        class="login-button">
+		        SEND OTP
+		    </button>
+
+		</form>
+
+
+        <div class="links">
+
+            <p>
+                New customer?
+                <a href="/register">
+                    Register here
+                </a>
+            </p>
+
+            <p>
+                <a href="/">
+                    ← Back to Dashboard
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+</body>
+</html>
+```
